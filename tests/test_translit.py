@@ -133,6 +133,12 @@ class TestSimple:
 
 
 class TestPhoneticKey:
+    def test_digits_are_letters_only_inside_words(self) -> None:
+        assert phonetic_key("A8hna") == phonetic_key("Αθήνα")
+        assert phonetic_key("3ypnhsa") == phonetic_key("Ξύπνησα")
+        assert phonetic_key("Οδός Ερμού 38") == phonetic_key("Οδός Ερμού")
+        assert phonetic_key("2023") == phonetic_key("1999") == ""
+
     @pytest.mark.parametrize(
         "spellings",
         [

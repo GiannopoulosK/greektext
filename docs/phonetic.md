@@ -25,8 +25,8 @@ permanent identifier.
 1. `fold`: no accents, no case, ς → σ.
 2. Greek words: ELOT 743 transliteration with ξ → `ks` and χ → `x`, and a nasal γ before ξ or χ
    written `g`.
-3. Latin text: Greeklish aliases. w → o, h → i (except in th, ch and ph), ph → f, 8 → th,
-   3 → ks, c → k, ch → x, u/y after a, e or h → v (αυ, ευ, ηυ), oy → ou, and y before i or e
+3. Latin text: Greeklish aliases. w → o, h → i (except in th, ch and ph), ph → f, 8 → th and
+   3 → ks next to a letter (a stand-alone 8 or 3 is a number and is dropped), c → k, ch → x, u/y after a, e or h → v (αυ, ευ, ηυ), oy → ou, and y before i or e
    → g (γ, as in *Yiannis*, *Panayiotis*).
 4. Drop everything that is not a letter.
 5. Repeat until nothing changes: i/y/ei/oi/yi → i, w → o, ai → e, af/au → av, ef/eu → ev,

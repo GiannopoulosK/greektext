@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Mapping
 from types import MappingProxyType
 
@@ -39,6 +40,10 @@ _LATIN_ALIASES: Mapping[str, str] = MappingProxyType(
         "c": "k",
     }
 )
+
+#: 8 and 3 stand for θ and ξ only inside a word ("A8hna", "3ypnhsa"); on their own they are
+#: numbers ("Ερμού 38") and are dropped like every other digit.
+_DIGIT_ALONE = re.compile(r"(?<![^\W\d_])[38]+(?![^\W\d_])")
 
 #: Pairs that are one sound: the pair before them never takes their first letter ("nth" is
 #: n + th, not nt + h; "ayi" is a + yi, not ay + i).
@@ -100,12 +105,12 @@ def phonetic_key(text: str) -> str:
     """Return a lowercase Latin sound key so Greek, Greeklish and transliterations collide.
 
     Steps: :func:`~greektext.fold`; Greek words are transliterated with ELOT 743 (ξ -> ks,
-    χ -> x); Latin text gets the Greeklish aliases (w -> o, h -> i, ph -> f, 8 -> th,
-    3 -> ks, c -> k, u/y after a/e -> v, y before i/e -> g); non-letters are dropped; then
-    spellings that sound alike are unified (i/y/ei/oi/yi -> i, w/o -> o, ai -> e,
-    af/au -> av, ef/eu -> ev, ng/gk/gg -> g, mp -> b, nt -> d, ch -> x, ou -> u) and doubled
-    letters collapsed, until nothing changes. The key writes the χ sound as "x" (Greeklish
-    uses x for χ). ``phonetic_key`` is idempotent.
+    χ -> x); Latin text gets the Greeklish aliases (w -> o, h -> i, ph -> f, 8 -> th and
+    3 -> ks inside a word, c -> k, u/y after a/e -> v, y before i/e -> g); non-letters are
+    dropped; then spellings that sound alike are unified (i/y/ei/oi/yi -> i, w/o -> o,
+    ai -> e, af/au -> av, ef/eu -> ev, ng/gk/gg -> g, mp -> b, nt -> d, ch -> x, ou -> u) and
+    doubled letters collapsed, until nothing changes. The key writes the χ sound as "x"
+    (Greeklish uses x for χ). ``phonetic_key`` is idempotent.
 
     The key is for matching only: it is lossy, and its exact spelling may change between minor
     versions, so do not store it as a permanent identifier.
@@ -119,7 +124,7 @@ def phonetic_key(text: str) -> str:
     >>> phonetic_key("Παναγιώτης") == phonetic_key("Panayiotis") == phonetic_key("Panagiwtis")
     True
     """
-    folded = fold(text)
+    folded = _DIGIT_ALONE.sub("", fold(text))
     parts: list[str] = []
     start = 0
     n = len(folded)

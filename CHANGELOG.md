@@ -12,6 +12,8 @@ All notable changes to this project are documented here. The format follows
   `ΜΑΪΟ Ή ΙΟΥΝΙΟ`, so it is not read as the article `Η`.
 - `to_latin` writes a single capital letter next to an all-caps word in all caps:
   `Θ. ΠΑΠΑΔΟΠΟΥΛΟΣ` becomes `TH. PAPADOPOULOS` instead of `Th. PAPADOPOULOS`.
+- The source distribution includes the docs, benchmark and contributing guide, so the
+  documentation examples are tested from the sdist too.
 
 ### Fixed
 

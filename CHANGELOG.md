@@ -11,6 +11,8 @@ All notable changes to this project are documented here. The format follows
 - `fix_lookalikes` no longer makes all-caps Greek words worse: a letter that only exists in one
   script now decides the word when every letter of the other script has a twin, so `AΘΗNA`
   becomes `ΑΘΗΝΑ` instead of `AΘHNA`.
+- `fix_final_sigma` (and so `lower`) turns a ς with no letter before it into σ: abbreviations
+  such as `Κ.Σ.` now lowercase to `κ.σ.`, not `κ.ς.`.
 
 ## [0.4.0] - 2026-11-23
 

@@ -25,8 +25,11 @@ __all__ = ["fix_final_sigma", "lower", "upper"]
 _SIGMA_AT_END = re.compile(
     rf"(?<=[{GREEK_LETTER_CLASS}\u0300-\u036f]){SIGMA}(?![\w\u0300-\u036f{ELISION_MARKS}])"
 )
-# ς inside a word: followed by a Greek letter.
-_FINAL_SIGMA_INSIDE = re.compile(rf"{FINAL_SIGMA}(?=[{GREEK_LETTER_CLASS}])")
+# ς that does not end a word: followed by a Greek letter, or with no Greek letter before it
+# (a lone "ς", or an abbreviation such as "Κ.Σ." lowercased by str.lower() to "κ.ς.").
+_FINAL_SIGMA_MISPLACED = re.compile(
+    rf"{FINAL_SIGMA}(?=[{GREEK_LETTER_CLASS}])|(?<![{GREEK_LETTER_CLASS}\u0300-\u036f]){FINAL_SIGMA}"
+)
 
 
 def fix_final_sigma(text: str) -> str:
@@ -35,7 +38,7 @@ def fix_final_sigma(text: str) -> str:
     - σ at the end of a Greek word becomes ς;
     - ς followed by a Greek letter becomes σ;
     - σ before an elision mark (``'``, ``’``, ``ʼ``) stays σ: "σ' αγαπώ";
-    - a lone "σ" (no letter before it) stays σ.
+    - a sigma with no letter before it (a lone "σ", an initial in "κ.σ.") is σ.
 
     >>> fix_final_sigma("οδοσ πατρων")
     'οδος πατρων'
@@ -45,11 +48,13 @@ def fix_final_sigma(text: str) -> str:
     "σ' αγαπώ"
     >>> fix_final_sigma("ΚΑΙ σ")
     'ΚΑΙ σ'
+    >>> fix_final_sigma("κ.ς.")
+    'κ.σ.'
     """
     if SIGMA not in text and FINAL_SIGMA not in text:
         return text
     text = _SIGMA_AT_END.sub(FINAL_SIGMA, text)
-    return _FINAL_SIGMA_INSIDE.sub(SIGMA, text)
+    return _FINAL_SIGMA_MISPLACED.sub(SIGMA, text)
 
 
 def lower(text: str) -> str:
@@ -57,6 +62,8 @@ def lower(text: str) -> str:
 
     >>> lower("ΟΔΟΣ ΠΑΤΡΩΝ")
     'οδος πατρων'
+    >>> lower("Κ.Σ. ΚΑΙ Α.Ε.Σ")  # str.lower() gives "κ.ς. και α.ε.ς"
+    'κ.σ. και α.ε.σ'
     >>> lower("Σ' ΑΓΑΠΩ")
     "σ' αγαπω"
     """

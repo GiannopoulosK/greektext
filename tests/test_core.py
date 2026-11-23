@@ -119,6 +119,10 @@ class TestFinalSigma:
             ("σ", "σ"),
             ("σ'", "σ'"),
             ("κ.σ.", "κ.σ."),
+            ("κ.ς.", "κ.σ."),  # an initial is not the end of a word
+            ("ς", "σ"),
+            (" ς", " σ"),
+            ("α.ε.ς", "α.ε.σ"),
             ("εσ' ", "εσ' "),
             ("πασ\u02bc", "πασ\u02bc"),
             ("οδοσ2", "οδοσ2"),  # digits continue the word
@@ -133,6 +137,7 @@ class TestFinalSigma:
     def test_lower(self) -> None:
         assert lower("ΚΑΛΗΣΠΕΡΑ ΣΑΣ") == "καλησπερα σας"
         assert lower("ΣΑΣ'") == "σας'"
+        assert lower("Σ.Τ.Ε. Κ.Σ.") == "σ.τ.ε. κ.σ."
 
 
 class TestNormalize:

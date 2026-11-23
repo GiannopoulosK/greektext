@@ -36,7 +36,8 @@ maps ς to σ), normalizes Greek punctuation and apostrophes, and collapses whit
 directions; `lower` applies it after `str.lower()`.
 
 An apostrophe after σ marks **elision** (*σ' αγαπώ*, *σ’ αγαπώ*): that σ stays σ. U+0027,
-U+2019 and U+02BC all count as elision marks. A lone *σ* also stays σ.
+U+2019 and U+02BC all count as elision marks. A sigma with no letter before it (a lone *σ*,
+or an initial such as *κ.σ.*) is always σ.
 
 ```python
 >>> from greektext import fix_final_sigma

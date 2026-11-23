@@ -34,3 +34,12 @@ at least 95% coverage of `src/greektext`.
 - When a Greek-language rule is unclear, write a test for the case and raise it in the pull
   request rather than inventing a rule.
 - Update `CHANGELOG.md` under *Unreleased*.
+
+## Releasing
+
+1. Set `__version__` in `src/greektext/__init__.py`, move the *Unreleased* entries in
+   `CHANGELOG.md` under the new version with today's date, and update the compare links.
+2. Commit as "Release X.Y.Z", then tag and push: `git tag vX.Y.Z && git push origin main vX.Y.Z`.
+3. The release workflow checks that the tag matches `__version__`, builds the sdist and wheel,
+   runs the test suite from them, publishes to PyPI through trusted publishing (the `pypi`
+   environment) and creates the GitHub release.

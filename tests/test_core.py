@@ -188,6 +188,11 @@ class TestScript:
         assert greek_ratio("αβγ d") == 0.75
         assert greek_ratio("ϢϣϤ") == 0.0  # Coptic is not Greek
 
+    @pytest.mark.parametrize("threshold", [-0.1, 1.5, float("nan")])
+    def test_is_greek_rejects_bad_threshold(self, threshold: float) -> None:
+        with pytest.raises(ValueError, match="threshold"):
+            is_greek("κόσμε", threshold=threshold)
+
     def test_is_greek_threshold(self) -> None:
         assert is_greek("Hello κόσμε") is True  # exactly 0.5
         assert is_greek("", threshold=0.0) is True

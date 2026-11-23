@@ -42,6 +42,8 @@ def greek_ratio(text: str) -> float:
 def is_greek(text: str, *, threshold: float = 0.5) -> bool:
     """Return True when ``greek_ratio(text) >= threshold``.
 
+    ``threshold`` must be between 0 and 1; anything else raises ``ValueError``.
+
     >>> is_greek("Καλημέρα κόσμε")
     True
     >>> is_greek("Hello world κόσμε")
@@ -49,6 +51,8 @@ def is_greek(text: str, *, threshold: float = 0.5) -> bool:
     >>> is_greek("Hello κόσμε", threshold=0.6)
     False
     """
+    if not 0.0 <= threshold <= 1.0:
+        raise ValueError(f"threshold must be between 0 and 1, got {threshold}")
     return greek_ratio(text) >= threshold
 
 

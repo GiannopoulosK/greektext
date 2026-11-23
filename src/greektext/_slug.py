@@ -51,10 +51,11 @@ def slugify(
     slug = sep.join(words)
     if max_length is None or len(slug) <= max_length:
         return slug
-    cut = ""
+    # Keep as many whole words as fit; a first word that does not fit on its own is cut.
+    length, count = -len(sep), 0
     for word in words:
-        candidate = f"{cut}{sep}{word}" if cut else word
-        if len(candidate) > max_length:
+        length += len(sep) + len(word)
+        if length > max_length:
             break
-        cut = candidate
-    return cut or words[0][:max_length]
+        count += 1
+    return sep.join(words[:count]) if count else words[0][:max_length]

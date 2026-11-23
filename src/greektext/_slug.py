@@ -6,7 +6,7 @@ import re
 import unicodedata
 
 from ._chars import DELETE_DIACRITICS, ELISION_MARKS
-from .translit import to_latin
+from ._translit import to_latin
 
 __all__ = ["slugify"]
 

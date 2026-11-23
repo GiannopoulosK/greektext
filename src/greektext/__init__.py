@@ -5,13 +5,13 @@
 True
 """
 
-from .accents import fold, strip_accents
-from .case import fix_final_sigma, lower, upper
-from .normalize import normalize
-from .phonetic import phonetic_key
-from .script import fix_lookalikes, greek_ratio, is_greek, sort_key
-from .slug import slugify
-from .translit import to_latin
+from ._accents import fold, strip_accents
+from ._case import fix_final_sigma, lower, upper
+from ._normalize import normalize
+from ._phonetic import phonetic_key
+from ._script import fix_lookalikes, greek_ratio, is_greek, sort_key
+from ._slug import slugify
+from ._translit import to_latin
 
 __version__ = "0.4.0"
 

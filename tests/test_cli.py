@@ -11,7 +11,7 @@ import sys
 import pytest
 
 from greektext import __version__, slugify
-from greektext.cli import main
+from greektext._cli import main
 
 # --------------------------------------------------------------------------- in-process
 
@@ -201,7 +201,7 @@ def test_subprocess_json_with_invalid_utf8() -> None:
 
 
 def test_json_safe_with_a_lone_surrogate() -> None:
-    from greektext.cli import _json_safe
+    from greektext._cli import _json_safe
 
     assert _json_safe("a\ud800b") == "a?b"
     assert _json_safe(0.5) == 0.5
@@ -222,7 +222,7 @@ def test_argv_from_sys_argv(
 
 
 def test_argv_that_the_locale_cannot_encode(monkeypatch: pytest.MonkeyPatch) -> None:
-    from greektext import cli as cli_module
+    from greektext import _cli as cli_module
 
     def ascii_fsencode(arg: str) -> bytes:
         return arg.encode("ascii")

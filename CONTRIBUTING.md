@@ -27,7 +27,7 @@ at least 95% coverage of `src/greektext`.
 
 - greektext has **no runtime dependencies** and no framework integrations: functions are plain
   `str -> str` callables, and framework usage belongs in `docs/recipes.md`.
-- Character tables are data: they belong in `_chars.py` or the scheme tables in `translit.py`,
+- Character tables are data: they belong in `_chars.py` or the scheme tables in `_translit.py`,
   never inline in logic.
 - Every public function has full type hints, a docstring with at least one doctest, and an entry
   in `__all__`.

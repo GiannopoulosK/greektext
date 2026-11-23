@@ -5,8 +5,8 @@ from __future__ import annotations
 import unicodedata
 from typing import Literal, cast
 
-from .case import fix_final_sigma
-from .script import fix_lookalikes
+from ._case import fix_final_sigma
+from ._script import fix_lookalikes
 
 __all__ = ["normalize"]
 

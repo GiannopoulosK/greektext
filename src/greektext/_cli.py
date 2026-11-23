@@ -20,13 +20,13 @@ from collections.abc import Callable, Iterable, Iterator, Sequence
 from typing import TextIO
 
 from . import __version__
-from .accents import fold, strip_accents
-from .case import lower, upper
-from .normalize import normalize
-from .phonetic import phonetic_key
-from .script import greek_ratio
-from .slug import slugify
-from .translit import SCHEMES, to_latin
+from ._accents import fold, strip_accents
+from ._case import lower, upper
+from ._normalize import normalize
+from ._phonetic import phonetic_key
+from ._script import greek_ratio
+from ._slug import slugify
+from ._translit import SCHEMES, to_latin
 
 __all__ = ["main"]
 

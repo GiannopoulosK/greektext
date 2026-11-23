@@ -51,7 +51,7 @@ dev = [
 docs = ["mkdocs-material>=9.5", "mkdocstrings[python]>=0.26"]
 
 [project.scripts]
-greektext = "greektext.cli:main"
+greektext = "greektext._cli:main"
 
 [project.urls]
 Homepage = "https://github.com/GiannopoulosK/greektext"

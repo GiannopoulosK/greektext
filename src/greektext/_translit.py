@@ -15,7 +15,7 @@ from typing import NamedTuple
 
 from ._chars import DIACRITICS, DIALYTIKA, GREEK_LETTERS
 
-__all__ = ["SCHEMES", "Scheme", "to_latin"]
+__all__ = ["to_latin"]
 
 # --------------------------------------------------------------------------- scheme tables
 

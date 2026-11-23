@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 
+from ._accents import fold
 from ._chars import (
     GREEK_HOMOGLYPHS,
     GREEK_LETTERS,
@@ -12,7 +13,6 @@ from ._chars import (
     LATIN_LETTERS,
     LATIN_TO_GREEK,
 )
-from .accents import fold
 
 __all__ = ["fix_lookalikes", "greek_ratio", "is_greek", "sort_key"]
 

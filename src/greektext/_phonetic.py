@@ -5,9 +5,9 @@ from __future__ import annotations
 from collections.abc import Mapping
 from types import MappingProxyType
 
+from ._accents import fold
 from ._chars import GREEK_LETTERS
-from .accents import fold
-from .translit import PHONETIC_SCHEME, transliterate
+from ._translit import PHONETIC_SCHEME, transliterate
 
 __all__ = ["phonetic_key"]
 

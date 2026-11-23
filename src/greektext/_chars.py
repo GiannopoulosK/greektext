@@ -1,6 +1,6 @@
 """Character data shared by the greektext modules.
 
-Everything in here is data, built once at import time. Logic lives in the public modules and
+Everything in here is data, built once at import time. Logic lives in the other modules and
 only looks things up here.
 """
 

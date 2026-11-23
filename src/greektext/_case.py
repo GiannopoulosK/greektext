@@ -11,7 +11,6 @@ from ._chars import (
     DIGRAPHS,
     ELISION_MARKS,
     FINAL_SIGMA,
-    GREEK_LETTER_CLASS,
     GREEK_LETTERS,
     SIGMA,
     TONOS,
@@ -24,16 +23,15 @@ __all__ = ["fix_final_sigma", "lower", "upper"]
 #: Accents that mark a stressed vowel: tonos/oxia, varia, perispomeni.
 _ACCENTS = frozenset("\u0301\u0300\u0342")
 
-# σ that ends a Greek word: after a Greek letter (or a mark on one), and not followed by another
-# word character, a mark, or an elision apostrophe.
-_SIGMA_AT_END = re.compile(
-    rf"(?<=[{GREEK_LETTER_CLASS}\u0300-\u036f]){SIGMA}(?![\w\u0300-\u036f{ELISION_MARKS}])"
-)
-# ς that does not end a word: followed by a Greek letter, or with no Greek letter before it
-# (a lone "ς", or an abbreviation such as "Κ.Σ." lowercased by str.lower() to "κ.ς.").
-_FINAL_SIGMA_MISPLACED = re.compile(
-    rf"{FINAL_SIGMA}(?=[{GREEK_LETTER_CLASS}])|(?<![{GREEK_LETTER_CLASS}\u0300-\u036f]){FINAL_SIGMA}"
-)
+_SIGMAS = re.compile(f"[{SIGMA}{FINAL_SIGMA}]")
+
+
+def _greek_letter_before(text: str, i: int) -> bool:
+    """Is the character before ``text[i]``, skipping combining marks, a Greek letter?"""
+    i -= 1
+    while i >= 0 and text[i] in DIACRITICS:
+        i -= 1
+    return i >= 0 and text[i] in GREEK_LETTERS
 
 
 def fix_final_sigma(text: str) -> str:
@@ -57,8 +55,19 @@ def fix_final_sigma(text: str) -> str:
     """
     if SIGMA not in text and FINAL_SIGMA not in text:
         return text
-    text = _SIGMA_AT_END.sub(FINAL_SIGMA, text)
-    return _FINAL_SIGMA_MISPLACED.sub(SIGMA, text)
+
+    def fix(match: re.Match[str]) -> str:
+        sigma, i, j = match.group(), match.start(), match.end()
+        after = text[j] if j < len(text) else ""
+        if not _greek_letter_before(text, i):
+            return SIGMA
+        if sigma == SIGMA:
+            in_word = after.isalnum() or after == "_" or after in DIACRITICS
+            elided = after != "" and after in ELISION_MARKS
+            return SIGMA if in_word or elided else FINAL_SIGMA
+        return SIGMA if after in GREEK_LETTERS else FINAL_SIGMA
+
+    return _SIGMAS.sub(fix, text)
 
 
 def lower(text: str) -> str:

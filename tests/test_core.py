@@ -225,3 +225,12 @@ class TestScript:
             "ωμέγα",
         ]
         assert sort_key("Α") < sort_key("α")  # deterministic tie-break
+
+
+def test_final_sigma_ignores_marks_on_other_scripts() -> None:
+    # A combining mark on a Latin letter does not make the next σ end a Greek word.
+    decomposed = unicodedata.normalize("NFD", "caféσ")
+    assert fix_final_sigma(decomposed) == decomposed
+    assert fix_final_sigma(unicodedata.normalize("NFD", "οδόσ")) == unicodedata.normalize(
+        "NFD", "οδός"
+    )

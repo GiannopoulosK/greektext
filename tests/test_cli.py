@@ -171,6 +171,21 @@ def test_subprocess_streams_10000_lines() -> None:
     assert out == [slugify(line) for line in lines]
 
 
+def test_subprocess_json_with_invalid_utf8() -> None:
+    proc = cli("--json", "upper", stdin=b"caf\xe9 \xce\xb1\n")
+    record = json.loads(proc.stdout.decode("utf-8"))  # valid UTF-8 and valid JSON
+    assert record == {"input": "caf\ufffd α", "output": "CAF\ufffd Α"}
+    # Plain output keeps the undecodable byte as it was.
+    assert cli("upper", stdin=b"caf\xe9\n").stdout.replace(b"\r\n", b"\n") == b"CAF\xe9\n"
+
+
+def test_json_safe_with_a_lone_surrogate() -> None:
+    from greektext.cli import _json_safe
+
+    assert _json_safe("a\ud800b") == "a?b"
+    assert _json_safe(0.5) == 0.5
+
+
 def test_subprocess_json() -> None:
     proc = cli("--json", "key", stdin="Αθήνα\nA8hna\n".encode())
     records = [json.loads(line) for line in proc.stdout.decode("utf-8").splitlines()]

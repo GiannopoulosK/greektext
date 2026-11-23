@@ -155,9 +155,27 @@ def _inputs(text: list[str], stdin: TextIO) -> Iterator[str]:
         yield line.rstrip("\r\n")
 
 
+def _json_safe(value: object) -> object:
+    """Replace undecodable input bytes (kept as surrogates) with U+FFFD, so JSON stays UTF-8.
+
+    Plain output writes those bytes back unchanged; JSON output must be valid UTF-8 instead.
+    """
+    if not isinstance(value, str):
+        return value
+    try:
+        raw = value.encode("utf-8", "surrogateescape")
+    except UnicodeEncodeError:  # a surrogate that did not come from an input byte
+        raw = value.encode("utf-8", "replace")
+    return raw.decode("utf-8", "replace")
+
+
 def _run(args: argparse.Namespace, inputs: Iterable[str], out: TextIO, as_json: bool) -> int:
     def emit(record: dict[str, object], plain: str) -> None:
-        out.write((json.dumps(record, ensure_ascii=False) if as_json else plain) + "\n")
+        if as_json:
+            safe = {key: _json_safe(value) for key, value in record.items()}
+            out.write(json.dumps(safe, ensure_ascii=False) + "\n")
+        else:
+            out.write(plain + "\n")
 
     if args.command == "detect":
         status = EXIT_OK

@@ -15,6 +15,8 @@ All notable changes to this project are documented here. The format follows
   such as `Κ.Σ.` now lowercase to `κ.σ.`, not `κ.ς.`.
 - `phonetic_key` matches common English-style spellings: y before i/e is γ (`Yiannis`,
   `Panayiotis`) and `ph` is φ (`Photis`).
+- CLI `--json` output is always valid UTF-8: input bytes that are not UTF-8 become U+FFFD in
+  JSON (plain output still passes them through unchanged).
 
 ## [0.4.0] - 2026-11-23
 

@@ -7,6 +7,7 @@ import unicodedata
 from ._chars import (
     APOSTROPHES,
     DELETE_DIACRITICS,
+    DELETE_INVISIBLE,
     DIACRITICS,
     DIALYTIKA,
     GREEK_LETTERS,
@@ -61,8 +62,9 @@ def fold(text: str) -> str:
     """Return a search / comparison key that ignores accents, case and final sigma.
 
     Steps: NFD, remove every diacritic (tonos, dialytika, polytonic marks, and accents on
-    Latin letters too), ``casefold()`` (which also maps ς to σ), map typographic
-    apostrophes to "'", collapse whitespace. Greek punctuation (U+037E, U+0387) becomes ";"
+    Latin letters too) and invisible format characters (soft hyphen, zero-width joiners,
+    BOM), ``casefold()`` (which also maps ς to σ), map typographic apostrophes to "'",
+    collapse whitespace. Greek punctuation (U+037E, U+0387) becomes ";"
     and "·" through the Unicode normalization. ``fold`` is idempotent.
 
     >>> fold("ΑΘΉΝΑ") == fold("Αθηνά") == fold("αθηνα") == "αθηνα"
@@ -73,6 +75,7 @@ def fold(text: str) -> str:
     'προιον προιον'
     """
     text = unicodedata.normalize("NFD", text).translate(DELETE_DIACRITICS).casefold()
+    text = text.translate(DELETE_INVISIBLE)
     # casefold can produce new marks ("ΐ" stays decomposed, "İ" -> "i" + U+0307).
     text = unicodedata.normalize("NFD", text).translate(DELETE_DIACRITICS)
     text = unicodedata.normalize("NFC", text).translate(APOSTROPHES)

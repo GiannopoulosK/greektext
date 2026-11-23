@@ -12,6 +12,22 @@ internally to strip marks and returns NFC.
 Greek Extended letters such as U+1F71 (ά with *oxia*) are canonically equivalent to the tonos
 forms, so NFC already unifies them; they are not mapped by hand.
 
+Text copied from web pages, PDFs and word processors often hides invisible format characters
+inside words: the soft hyphen (U+00AD), the zero-width joiners (U+200C, U+200D), the word joiner
+(U+2060) and the BOM (U+FEFF). They never end a word: `lower` and `fix_final_sigma` look past them,
+`upper` keeps them in place, and `fold`, `to_latin`, `slugify` and `phonetic_key` remove them.
+
+```python
+>>> from greektext import fold, lower, to_latin
+>>> lower("ΘΕΣ\u00adΣΑΛΟΝΙΚΗ") == "θεσ\u00adσαλονικη"
+True
+>>> fold("Θεσ\u00adσαλονίκη") == fold("Θεσσαλονίκη")
+True
+>>> to_latin("Ευ\u00adρώπη")
+'Evropi'
+
+```
+
 ## Accents
 
 `strip_accents` removes the tonos and all polytonic marks (breathings, grave, circumflex, iota

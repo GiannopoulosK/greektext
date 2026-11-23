@@ -14,8 +14,11 @@ from greektext import (
     is_greek,
     lower,
     normalize,
+    phonetic_key,
+    slugify,
     sort_key,
     strip_accents,
+    to_latin,
     upper,
 )
 
@@ -234,3 +237,23 @@ def test_final_sigma_ignores_marks_on_other_scripts() -> None:
     assert fix_final_sigma(unicodedata.normalize("NFD", "οδόσ")) == unicodedata.normalize(
         "NFD", "οδός"
     )
+
+
+SOFT_HYPHEN = "­"
+
+
+@pytest.mark.parametrize("mark", ["­", "‌", "‍", "⁠", "﻿"])
+def test_invisible_characters_do_not_split_words(mark: str) -> None:
+    assert lower(f"ΘΕΣ{mark}ΣΑΛΟΝΙΚΗ") == f"θεσ{mark}σαλονικη"
+    assert lower(f"ΟΔΟΣ{mark}") == f"οδος{mark}"
+    assert upper(f"Μά{mark}ιος") == f"ΜΑ{mark}ΪΟΣ"
+    assert fold(f"Θεσ{mark}σαλονίκη") == fold("Θεσσαλονίκη")
+    assert fold(f"{mark}Αθήνα") == "αθηνα"
+    assert to_latin(f"Ευ{mark}ρώπη") == "Evropi"
+    assert to_latin(f"Μπα{mark}μπάς") == "Bampas"
+    assert slugify(f"Θεσ{mark}σαλονίκη") == "thessaloniki"
+    assert phonetic_key(f"Θεσ{mark}σαλονίκη") == phonetic_key("Θεσσαλονίκη")
+
+
+def test_zero_width_space_still_separates_words() -> None:
+    assert lower("ΟΔΟΣ​ΠΑΤΡΩΝ") == "οδος​πατρων"

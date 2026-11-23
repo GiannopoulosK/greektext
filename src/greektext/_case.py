@@ -12,6 +12,7 @@ from ._chars import (
     ELISION_MARKS,
     FINAL_SIGMA,
     GREEK_LETTERS,
+    INVISIBLE,
     SIGMA,
     TONOS,
     UPPER_DROPS,
@@ -27,9 +28,9 @@ _SIGMAS = re.compile(f"[{SIGMA}{FINAL_SIGMA}]")
 
 
 def _greek_letter_before(text: str, i: int) -> bool:
-    """Is the character before ``text[i]``, skipping combining marks, a Greek letter?"""
+    """Is the character before ``text[i]``, skipping marks and invisible characters, Greek?"""
     i -= 1
-    while i >= 0 and text[i] in DIACRITICS:
+    while i >= 0 and (text[i] in DIACRITICS or text[i] in INVISIBLE):
         i -= 1
     return i >= 0 and text[i] in GREEK_LETTERS
 
@@ -58,6 +59,8 @@ def fix_final_sigma(text: str) -> str:
 
     def fix(match: re.Match[str]) -> str:
         sigma, i, j = match.group(), match.start(), match.end()
+        while j < len(text) and text[j] in INVISIBLE:  # a soft hyphen does not end the word
+            j += 1
         after = text[j] if j < len(text) else ""
         if not _greek_letter_before(text, i):
             return SIGMA
@@ -120,6 +123,9 @@ def upper(text: str) -> str:
             j += 1
         marks = decomposed[i + 1 : j]
         i = j
+        if base in INVISIBLE:  # a soft hyphen or joiner inside a word: keep it, keep the state
+            out.append(base + marks)
+            continue
         if base not in GREEK_LETTERS:
             # str.upper() turns a stray iota subscript into a capital iota (U+0345 -> U+0399);
             # it only belongs to Greek letters, so drop it like every other Greek capital does.

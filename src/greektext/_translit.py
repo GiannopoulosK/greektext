@@ -13,7 +13,7 @@ from dataclasses import dataclass, field, replace
 from types import MappingProxyType
 from typing import NamedTuple
 
-from ._chars import DIACRITICS, DIALYTIKA, GREEK_LETTERS
+from ._chars import DELETE_INVISIBLE, DIACRITICS, DIALYTIKA, GREEK_LETTERS
 
 __all__ = ["to_latin"]
 
@@ -265,7 +265,8 @@ def to_latin(text: str, *, scheme: str = "elot743") -> str:
     otherwise a capital letter capitalizes only the first Latin letter of its output. A
     single capital letter next to an all-caps word is part of an all-caps line and gives
     all caps too ("Θ. ΠΑΠΑΔΟΠΟΥΛΟΣ" -> "TH. PAPADOPOULOS").
-    Non-Greek text passes through unchanged.
+    Non-Greek text passes through unchanged, except that invisible format characters (soft
+    hyphen, zero-width joiners, BOM) are removed so they cannot split a word.
 
     >>> to_latin("Θεσσαλονίκη")
     'Thessaloniki'
@@ -280,4 +281,4 @@ def to_latin(text: str, *, scheme: str = "elot743") -> str:
         table = SCHEMES[scheme]
     except KeyError:
         raise ValueError(f"Unknown scheme {scheme!r}; expected one of {sorted(SCHEMES)}") from None
-    return transliterate(text, table)
+    return transliterate(text.translate(DELETE_INVISIBLE), table)

@@ -31,6 +31,13 @@ DIACRITICS: frozenset[str] = frozenset(
 #: ``str.translate`` table deleting every diacritical mark.
 DELETE_DIACRITICS: dict[int, None] = dict.fromkeys(map(ord, DIACRITICS))
 
+#: Invisible format characters that can sit inside a word without ending it: SOFT HYPHEN, ZERO
+#: WIDTH NON-JOINER, ZERO WIDTH JOINER, WORD JOINER and ZERO WIDTH NO-BREAK SPACE (the BOM).
+#: They come with text copied from web pages, PDFs and word processors. (ZERO WIDTH SPACE is a
+#: word break by definition and is not included.)
+INVISIBLE = "\u00ad\u200c\u200d\u2060\ufeff"
+DELETE_INVISIBLE: dict[int, None] = dict.fromkeys(map(ord, INVISIBLE))
+
 # --------------------------------------------------------------------------- Greek letters
 
 #: Unicode blocks holding Greek letters. Coptic letters (U+03E2-U+03EF) share the first block but

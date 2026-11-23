@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from collections.abc import Callable
 
 from hypothesis import given
@@ -23,6 +24,7 @@ from greektext import (
     to_latin,
     upper,
 )
+from greektext._chars import GREEK_LETTERS
 
 # Arbitrary Unicode without surrogates (which cannot be encoded and never reach str APIs
 # from real input).
@@ -125,3 +127,54 @@ def test_translit_never_raises(text: str) -> None:
     to_latin(text)
     to_latin(text, scheme="simple")
     phonetic_key(text)
+
+
+# --------------------------------------------------------------------------- invariants
+
+
+@given(greek_text)
+def test_to_latin_leaves_no_greek_letters(text: str) -> None:
+    for scheme in ("elot743", "simple"):
+        assert GREEK_LETTERS.isdisjoint(to_latin(text, scheme=scheme))
+
+
+@given(any_text, st.integers(min_value=0, max_value=40))
+def test_slug_respects_max_length(text: str, max_length: int) -> None:
+    slug = slugify(text, max_length=max_length)
+    assert len(slug) <= max_length
+    assert slug == "" or SLUG_RE.match(slug), slug
+
+
+@given(greek_text)
+def test_final_sigma_only_ends_words(text: str) -> None:
+    fixed = fix_final_sigma(text)
+    for i, ch in enumerate(fixed):
+        if ch == "ς":
+            after = fixed[i + 1 : i + 2]
+            assert after not in GREEK_LETTERS or after == "", fixed
+            assert i > 0, fixed
+
+
+@given(greek_text)
+def test_upper_drops_accents_except_disjunctive_eta(text: str) -> None:
+    out = unicodedata.normalize("NFD", upper(text))
+    for i, ch in enumerate(out):
+        if ch in "̀́͂̓̔ͅ" and i > 0 and out[i - 1] in GREEK_LETTERS:
+            # Only a stand-alone Ή keeps a mark.
+            assert ch == "́", out
+            assert out[i - 1] == "Η", out
+            assert i < 2 or not out[i - 2].isalpha(), out
+
+
+@given(greek_text)
+def test_phonetic_key_ignores_case_and_accents(text: str) -> None:
+    key = phonetic_key(text)
+    assert phonetic_key(upper(text)) == key
+    assert phonetic_key(strip_accents(text, keep_dialytika=False)) == key
+
+
+@given(any_text)
+def test_fix_lookalikes_only_swaps_letters(text: str) -> None:
+    fixed = fix_lookalikes(text)
+    assert len(fixed) == len(text)
+    assert all(a == b or (a.isalpha() and b.isalpha()) for a, b in zip(text, fixed, strict=True))

@@ -23,8 +23,14 @@ theme:
 
 nav:
   - Home: index.md
+  - Greek text rules: rules.md
   - Transliteration: transliteration.md
   - Matching Greeklish: phonetic.md
+  - Command line: cli.md
+  - Recipes: recipes.md
+  - API reference: api.md
+  - Changelog: changelog.md
+
 markdown_extensions:
   - admonition
   - tables
@@ -32,6 +38,8 @@ markdown_extensions:
       permalink: true
   - pymdownx.highlight
   - pymdownx.superfences
+  - pymdownx.snippets:
+      check_paths: true
 
 plugins:
   - search

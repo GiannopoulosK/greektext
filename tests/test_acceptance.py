@@ -1,8 +1,6 @@
 """The acceptance table from the specification, written before the implementation.
 
-Every row here must pass for a release. Each group is marked ``pending`` until the
-milestone that implements it lands; ``xfail_strict`` turns an unexpected pass into a failure,
-so the marker has to be removed as soon as a group is done.
+Every row here must pass for a release.
 """
 
 from __future__ import annotations
@@ -22,8 +20,6 @@ from greektext import (
     to_latin,
     upper,
 )
-
-pending = pytest.mark.xfail(raises=NotImplementedError, strict=True, reason="not implemented yet")
 
 
 @pytest.mark.parametrize(
@@ -87,7 +83,6 @@ def test_normalize(text: str, expected: str) -> None:
     assert normalize(text) == expected
 
 
-@pending
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
@@ -107,7 +102,6 @@ def test_to_latin(text: str, expected: str) -> None:
     assert to_latin(text) == expected
 
 
-@pending
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
@@ -119,7 +113,6 @@ def test_slugify(text: str, expected: str) -> None:
     assert slugify(text) == expected
 
 
-@pending
 @pytest.mark.parametrize(
     "spellings",
     [

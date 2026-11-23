@@ -13,7 +13,13 @@ from dataclasses import dataclass, field, replace
 from types import MappingProxyType
 from typing import Literal, NamedTuple
 
-from ._chars import DELETE_INVISIBLE, DIACRITICS, DIALYTIKA, GREEK_LETTERS
+from ._chars import (
+    DELETE_INVISIBLE,
+    DIACRITICS,
+    DIALYTIKA,
+    GREEK_LETTERS,
+    SPACING_YPOGEGRAMMENI,
+)
 
 __all__ = ["to_latin"]
 
@@ -252,6 +258,10 @@ def _caps_neighbour(segments: list[list[_Letter] | str], caps: list[bool], k: in
     return False
 
 
+#: Removed / rewritten before transliterating.
+_PREPARE = {**DELETE_INVISIBLE, **SPACING_YPOGEGRAMMENI}
+
+
 def to_latin(text: str, *, scheme: SchemeName = "elot743") -> str:
     """Transliterate Greek to Latin.
 
@@ -284,4 +294,4 @@ def to_latin(text: str, *, scheme: SchemeName = "elot743") -> str:
         table = SCHEMES[scheme]
     except KeyError:
         raise ValueError(f"Unknown scheme {scheme!r}; expected one of {sorted(SCHEMES)}") from None
-    return transliterate(text.translate(DELETE_INVISIBLE), table)
+    return transliterate(text.translate(_PREPARE), table)

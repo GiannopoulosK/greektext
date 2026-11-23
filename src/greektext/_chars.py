@@ -14,6 +14,10 @@ TONOS = "\u0301"  # COMBINING ACUTE ACCENT, what NFD turns the tonos / oxia into
 DIALYTIKA = "\u0308"  # COMBINING DIAERESIS
 YPOGEGRAMMENI = "\u0345"  # COMBINING GREEK YPOGEGRAMMENI (iota subscript)
 
+#: The spacing GREEK YPOGEGRAMMENI (U+037A) is an older way to write the iota subscript after
+#: a letter ("αͺ" for "ᾳ"). Reading it as the combining mark lets it be handled like one.
+SPACING_YPOGEGRAMMENI: dict[int, str] = {0x037A: YPOGEGRAMMENI}
+
 #: Ranges of combining *diacritical* marks. ``fold`` deletes all of them; other combining
 #: characters (Indic vowel signs and the like) are part of their letters and are kept.
 DIACRITIC_RANGES: tuple[tuple[int, int], ...] = (

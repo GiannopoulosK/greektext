@@ -14,6 +14,7 @@ from ._chars import (
     GREEK_LETTERS,
     INVISIBLE,
     SIGMA,
+    SPACING_YPOGEGRAMMENI,
     TONOS,
     UPPER_DROPS,
     YPOGEGRAMMENI,
@@ -114,7 +115,7 @@ def upper(text: str) -> str:
     prev_base = ""
     prev_tonos = False
     prev_letter = False  # whether the previous character was a letter (of any script)
-    decomposed = unicodedata.normalize("NFD", text)
+    decomposed = unicodedata.normalize("NFD", text.translate(SPACING_YPOGEGRAMMENI))
     i, n = 0, len(decomposed)
     while i < n:
         base = decomposed[i]

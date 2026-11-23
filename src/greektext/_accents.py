@@ -11,11 +11,14 @@ from ._chars import (
     DIACRITICS,
     DIALYTIKA,
     GREEK_LETTERS,
+    SPACING_YPOGEGRAMMENI,
     STRIP_ALL,
     STRIP_KEEP_DIALYTIKA,
 )
 
 __all__ = ["fold", "strip_accents"]
+
+_FOLD_PREPARE = {**DELETE_INVISIBLE, **SPACING_YPOGEGRAMMENI}
 
 
 def strip_accents(text: str, *, keep_dialytika: bool = True) -> str:
@@ -38,7 +41,7 @@ def strip_accents(text: str, *, keep_dialytika: bool = True) -> str:
     'café Αθηνα'
     """
     table = STRIP_KEEP_DIALYTIKA if keep_dialytika else STRIP_ALL
-    text = unicodedata.normalize("NFC", text).translate(table)
+    text = unicodedata.normalize("NFC", text.translate(SPACING_YPOGEGRAMMENI)).translate(table)
     if not DIACRITICS.isdisjoint(text):
         # Marks NFC could not compose onto a Greek letter (rare stacks such as "ά" + U+0304).
         text = _strip_loose_marks(text, keep_dialytika)
@@ -74,8 +77,8 @@ def fold(text: str) -> str:
     >>> fold("  Προϊόν   ΠΡΟΪΟΝ ")
     'προιον προιον'
     """
-    text = unicodedata.normalize("NFD", text).translate(DELETE_DIACRITICS).casefold()
-    text = text.translate(DELETE_INVISIBLE)
+    text = unicodedata.normalize("NFD", text.translate(_FOLD_PREPARE))
+    text = text.translate(DELETE_DIACRITICS).casefold()
     # casefold can produce new marks ("ΐ" stays decomposed, "İ" -> "i" + U+0307).
     text = unicodedata.normalize("NFD", text).translate(DELETE_DIACRITICS)
     text = unicodedata.normalize("NFC", text).translate(APOSTROPHES)

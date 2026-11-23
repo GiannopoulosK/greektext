@@ -262,3 +262,10 @@ def test_invisible_characters_do_not_split_words(mark: str) -> None:
 
 def test_zero_width_space_still_separates_words() -> None:
     assert lower("ΟΔΟΣ​ΠΑΤΡΩΝ") == "οδος​πατρων"
+
+
+def test_spacing_ypogegrammeni_is_an_iota_subscript() -> None:
+    # U+037A after a letter is an older spelling of the iota subscript: "αͺ" is "ᾳ".
+    for function in (upper, fold, strip_accents, to_latin, slugify, phonetic_key):
+        assert function("τῇ αͺ") == function("τῇ ᾳ"), function
+    assert to_latin("ΑͺΣ") == "AS"

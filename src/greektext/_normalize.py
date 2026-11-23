@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import unicodedata
-from typing import Literal, cast
+from typing import Literal
 
 from ._case import fix_final_sigma
 from ._script import fix_lookalikes
@@ -12,13 +12,13 @@ __all__ = ["normalize"]
 
 UnicodeForm = Literal["NFC", "NFD", "NFKC", "NFKD"]
 
-_FORMS: tuple[str, ...] = ("NFC", "NFD", "NFKC", "NFKD")
+_FORMS: tuple[UnicodeForm, ...] = ("NFC", "NFD", "NFKC", "NFKD")
 
 
 def normalize(
     text: str,
     *,
-    form: str = "NFC",
+    form: UnicodeForm = "NFC",
     whitespace: bool = True,
     final_sigma: bool = True,
     lookalikes: bool = False,
@@ -46,7 +46,7 @@ def normalize(
     """
     if form not in _FORMS:
         raise ValueError(f"form must be one of {_FORMS}, got {form!r}")
-    text = unicodedata.normalize(cast(UnicodeForm, form), text)
+    text = unicodedata.normalize(form, text)
     if whitespace:
         text = " ".join(text.split())
     if lookalikes:
@@ -56,5 +56,5 @@ def normalize(
     if lookalikes:
         # Swapping a letter changes what a following mark composes with (Greek Ρ + U+0301 has
         # no precomposed form, Latin P + U+0301 is Ṕ), so restore the requested form.
-        text = unicodedata.normalize(cast(UnicodeForm, form), text)
+        text = unicodedata.normalize(form, text)
     return text

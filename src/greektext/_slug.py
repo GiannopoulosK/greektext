@@ -6,7 +6,7 @@ import re
 import unicodedata
 
 from ._chars import DELETE_DIACRITICS, ELISION_MARKS
-from ._translit import to_latin
+from ._translit import SchemeName, to_latin
 
 __all__ = ["slugify"]
 
@@ -19,7 +19,7 @@ def slugify(
     text: str,
     *,
     sep: str = "-",
-    scheme: str = "elot743",
+    scheme: SchemeName = "elot743",
     max_length: int | None = None,
     lowercase: bool = True,
 ) -> str:

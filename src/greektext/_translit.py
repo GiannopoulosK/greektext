@@ -11,7 +11,7 @@ import unicodedata
 from collections.abc import Mapping
 from dataclasses import dataclass, field, replace
 from types import MappingProxyType
-from typing import NamedTuple
+from typing import Literal, NamedTuple
 
 from ._chars import DELETE_INVISIBLE, DIACRITICS, DIALYTIKA, GREEK_LETTERS
 
@@ -89,6 +89,9 @@ PHONETIC_SCHEME = replace(
     letters=MappingProxyType({**_ELOT743.letters, "ξ": "ks", "χ": "x"}),
     consonant_digraphs=MappingProxyType({**_ELOT743.consonant_digraphs, "γξ": "gks", "γχ": "gx"}),
 )
+
+#: The name of a public transliteration scheme.
+SchemeName = Literal["elot743", "simple"]
 
 #: The public transliteration schemes by name.
 SCHEMES: Mapping[str, Scheme] = MappingProxyType({"elot743": _ELOT743, "simple": _SIMPLE})
@@ -249,7 +252,7 @@ def _caps_neighbour(segments: list[list[_Letter] | str], caps: list[bool], k: in
     return False
 
 
-def to_latin(text: str, *, scheme: str = "elot743") -> str:
+def to_latin(text: str, *, scheme: SchemeName = "elot743") -> str:
     """Transliterate Greek to Latin.
 
     Schemes:

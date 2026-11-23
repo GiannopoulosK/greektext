@@ -171,7 +171,7 @@ class TestNormalize:
         assert normalize("ά", form="NFD") == "α\u0301"
         assert normalize("ﬁ", form="NFKC") == "fi"
         with pytest.raises(ValueError, match="form"):
-            normalize("x", form="NFX")
+            normalize("x", form="NFX")  # type: ignore[arg-type]
 
     def test_flags(self) -> None:
         assert normalize(" οδοσ ", whitespace=False, final_sigma=False) == " οδοσ "

@@ -22,3 +22,11 @@ def test_only_top_level_is_public() -> None:
     assert all(name.startswith("_") for name in modules), modules
     public = {n for n in dir(greektext) if not n.startswith("_")}
     assert public == set(greektext.__all__) - {"__version__"}
+
+
+def test_scheme_names_match_the_schemes() -> None:
+    import typing
+
+    from greektext._translit import SCHEMES, SchemeName
+
+    assert set(typing.get_args(SchemeName)) == set(SCHEMES)

@@ -112,7 +112,7 @@ class TestElot743:
 
     def test_unknown_scheme(self) -> None:
         with pytest.raises(ValueError, match="scheme"):
-            to_latin("α", scheme="iso")
+            to_latin("α", scheme="iso")  # type: ignore[arg-type]
 
 
 class TestSimple:

@@ -13,7 +13,7 @@ from .script import fix_lookalikes, greek_ratio, is_greek, sort_key
 from .slug import slugify
 from .translit import to_latin
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [
     "__version__",

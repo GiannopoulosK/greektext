@@ -6,6 +6,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-23
+
+### Added
+
+- `greektext` command (also `python -m greektext`) with the subcommands `normalize`, `strip`,
+  `fold`, `upper`, `lower`, `latin`, `key`, `slug` and `detect`.
+- Stdin streaming, global `--json` output, and exit codes 0 (success), 1 (`detect` negative)
+  and 2 (usage error).
+- UTF-8 input and output regardless of the console or locale encoding.
+
 ## [0.2.0] - 2026-11-23
 
 ### Added
@@ -34,7 +44,8 @@ All notable changes to this project are documented here. The format follows
   release workflow and an empty docs site.
 - The specification's acceptance table as (pending) parametrized tests.
 
-[Unreleased]: https://github.com/GiannopoulosK/greektext/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/GiannopoulosK/greektext/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/GiannopoulosK/greektext/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/GiannopoulosK/greektext/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/GiannopoulosK/greektext/compare/v0.0.1...v0.1.0
 [0.0.1]: https://github.com/GiannopoulosK/greektext/releases/tag/v0.0.1

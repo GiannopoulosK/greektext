@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 
 from hypothesis import given
@@ -15,8 +16,11 @@ from greektext import (
     is_greek,
     lower,
     normalize,
+    phonetic_key,
+    slugify,
     sort_key,
     strip_accents,
+    to_latin,
     upper,
 )
 
@@ -84,3 +88,40 @@ def test_ascii_passes_through(text: str) -> None:
     assert strip_accents(text) == text
     assert fix_final_sigma(text) == text
     assert normalize(text) == " ".join(text.split())
+
+
+# --------------------------------------------------------------------------- transliteration
+
+SLUG_RE = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+
+
+@given(any_text)
+def test_phonetic_key_idempotent(text: str) -> None:
+    key = phonetic_key(text)
+    assert phonetic_key(key) == key
+
+
+@given(greek_text)
+def test_phonetic_key_idempotent_on_greek(text: str) -> None:
+    key = phonetic_key(text)
+    assert phonetic_key(key) == key
+
+
+@given(any_text)
+def test_slug_shape(text: str) -> None:
+    slug = slugify(text)
+    assert slug == "" or SLUG_RE.match(slug), slug
+
+
+@given(greek_text)
+def test_slug_shape_greek(text: str) -> None:
+    slug = slugify(text, scheme="simple", max_length=12)
+    assert slug == "" or SLUG_RE.match(slug), slug
+    assert len(slug) <= 12
+
+
+@given(any_text)
+def test_translit_never_raises(text: str) -> None:
+    to_latin(text)
+    to_latin(text, scheme="simple")
+    phonetic_key(text)

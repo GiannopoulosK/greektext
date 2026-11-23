@@ -26,7 +26,6 @@ from greektext import (
 pending = pytest.mark.xfail(raises=NotImplementedError, strict=True, reason="not implemented yet")
 
 
-@pending
 @pytest.mark.parametrize(
     ("text", "kwargs", "expected"),
     [
@@ -40,17 +39,14 @@ def test_strip_accents(text: str, kwargs: dict[str, bool], expected: str) -> Non
     assert strip_accents(text, **kwargs) == expected
 
 
-@pending
 def test_fold_makes_spellings_equal() -> None:
     assert fold("ΑΘΉΝΑ") == fold("Αθηνά") == fold("αθηνα")
 
 
-@pending
 def test_fold_final_sigma() -> None:
     assert fold("οδός") == "οδοσ"
 
 
-@pending
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
@@ -64,12 +60,10 @@ def test_upper(text: str, expected: str) -> None:
     assert upper(text) == expected
 
 
-@pending
 def test_lower() -> None:
     assert lower("ΟΔΟΣ ΠΑΤΡΩΝ") == "οδος πατρων"
 
 
-@pending
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
@@ -82,7 +76,6 @@ def test_fix_final_sigma(text: str, expected: str) -> None:
     assert fix_final_sigma(text) == expected
 
 
-@pending
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
@@ -141,12 +134,10 @@ def test_phonetic_key_collides(spellings: tuple[str, ...]) -> None:
     assert len(keys) == 1, keys
 
 
-@pending
 def test_fix_lookalikes_latin_k_in_greek_word() -> None:
     assert fix_lookalikes("Kαλημέρα") == "Καλημέρα"  # Latin K -> Greek Κ
 
 
-@pending
 @pytest.mark.parametrize(
     ("text", "expected"),
     [

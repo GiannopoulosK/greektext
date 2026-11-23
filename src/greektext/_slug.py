@@ -12,6 +12,7 @@ __all__ = ["slugify"]
 
 _DROP_APOSTROPHES = dict.fromkeys(map(ord, ELISION_MARKS))
 _NON_ALNUM = re.compile(r"[^a-zA-Z0-9]+")
+_ALNUM = re.compile(r"[a-zA-Z0-9]")
 
 
 def slugify(
@@ -28,7 +29,8 @@ def slugify(
     Latin letters are dropped, apostrophes are removed ("Τ'αστέρια" -> "tasteria"), and every
     other run of characters outside ``[a-z0-9]`` becomes one ``sep``. With ``max_length`` the
     slug is cut at the last separator that fits; a single word longer than ``max_length`` is
-    cut at ``max_length``.
+    cut at ``max_length``. ``sep`` may be empty but must not contain ASCII letters or digits,
+    which would make the words of the slug impossible to tell apart.
 
     >>> slugify("Καλημέρα Κόσμε!")
     'kalimera-kosme'
@@ -41,6 +43,8 @@ def slugify(
     >>> slugify("Ταχυδρομικός κώδικας 54624", max_length=5)
     'tachy'
     """
+    if _ALNUM.search(sep):
+        raise ValueError(f"sep must not contain letters or digits, got {sep!r}")
     if max_length is not None and max_length < 0:
         raise ValueError(f"max_length must be >= 0, got {max_length}")
     latin = to_latin(text.translate(_DROP_APOSTROPHES), scheme=scheme)

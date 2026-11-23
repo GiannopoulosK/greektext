@@ -195,6 +195,15 @@ class TestSlugify:
     def test_cases(self, text: str, kwargs: dict[str, object], expected: str) -> None:
         assert slugify(text, **kwargs) == expected  # type: ignore[arg-type]
 
+    @pytest.mark.parametrize("sep", ["a", "-1-", "Z"])
+    def test_alphanumeric_separator(self, sep: str) -> None:
+        with pytest.raises(ValueError, match="sep"):
+            slugify("Ά-ή", sep=sep)
+
+    def test_empty_and_unicode_separators(self) -> None:
+        assert slugify("Καλημέρα Κόσμε", sep="") == "kalimerakosme"
+        assert slugify("Καλημέρα Κόσμε", sep="·") == "kalimera·kosme"
+
     def test_negative_max_length(self) -> None:
         with pytest.raises(ValueError, match="max_length"):
             slugify("α", max_length=-1)

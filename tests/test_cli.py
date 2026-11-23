@@ -114,6 +114,7 @@ def test_no_command_is_usage_error(capsys: pytest.CaptureFixture[str]) -> None:
         ["nope"],
         ["latin", "--scheme", "iso", "α"],
         ["slug", "--max-length", "-1", "α"],
+        ["slug", "--sep", "x", "α"],
         ["detect", "--threshold", "1.5", "α"],
         ["detect", "--threshold", "-0.1", "α"],
         ["detect", "--threshold", "half", "α"],

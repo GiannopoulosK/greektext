@@ -72,6 +72,12 @@ def _non_negative_int(value: str) -> int:
     return number
 
 
+def _separator(value: str) -> str:
+    if any(ch.isascii() and ch.isalnum() for ch in value):
+        raise argparse.ArgumentTypeError(f"must not contain letters or digits, got {value!r}")
+    return value
+
+
 def _build_parser() -> argparse.ArgumentParser:
     # --json is accepted both before and after the subcommand.
     json_flag = argparse.ArgumentParser(add_help=False)
@@ -118,7 +124,7 @@ def _build_parser() -> argparse.ArgumentParser:
     add("key", "phonetic key for matching Greek, Greeklish and transliterations")
 
     p = add("slug", "URL / filename slug")
-    p.add_argument("--sep", default="-", help="separator (default: -)")
+    p.add_argument("--sep", type=_separator, default="-", help="separator (default: -)")
     p.add_argument("--max-length", type=_non_negative_int, default=None, metavar="N")
     p.add_argument("--scheme", choices=schemes, default="elot743")
 

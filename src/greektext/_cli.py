@@ -33,7 +33,8 @@ __all__ = ["main"]
 EXIT_OK = 0
 EXIT_NOT_GREEK = 1
 EXIT_USAGE = 2
-EXIT_BROKEN_PIPE = 1
+EXIT_INTERRUPTED = 130  # 128 + SIGINT, as shells report Ctrl-C
+EXIT_BROKEN_PIPE = 141  # 128 + SIGPIPE, as shells report a closed pipe
 
 Transform = Callable[[str], str]
 
@@ -59,14 +60,20 @@ def _transform(args: argparse.Namespace) -> Transform:
 
 
 def _ratio(value: str) -> float:
-    number = float(value)
+    try:
+        number = float(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"not a number: {value!r}") from None
     if not 0.0 <= number <= 1.0:
         raise argparse.ArgumentTypeError(f"must be between 0 and 1, got {value}")
     return number
 
 
 def _non_negative_int(value: str) -> int:
-    number = int(value)
+    try:
+        number = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"not a whole number: {value!r}") from None
     if number < 0:
         raise argparse.ArgumentTypeError(f"must be >= 0, got {number}")
     return number
@@ -136,10 +143,10 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _use_utf8(stream: TextIO) -> None:
+def _use_utf8(stream: TextIO, encoding: str = "utf-8") -> None:
     """Force UTF-8 so Windows consoles and pipes do not break Greek text."""
     if isinstance(stream, io.TextIOWrapper):
-        stream.reconfigure(encoding="utf-8", errors="surrogateescape")
+        stream.reconfigure(encoding=encoding, errors="surrogateescape")
 
 
 def _utf8_argv(argv: Sequence[str]) -> list[str]:
@@ -193,12 +200,15 @@ def _run(args: argparse.Namespace, inputs: Iterable[str], out: TextIO, as_json: 
     if args.command == "detect":
         total = greek = 0
         for item in inputs:
+            if not item.strip():  # a blank line is neither Greek nor not: echo it, skip it
+                emit({"input": item, "output": None, "ratio": None}, "")
+                continue
             ratio = greek_ratio(item)
             verdict = "greek" if ratio >= args.threshold else "not-greek"
             total += 1
             greek += verdict == "greek"
             emit({"input": item, "output": verdict, "ratio": ratio}, verdict)
-        # Empty input is not Greek text: `if greektext detect < empty.txt` must not succeed.
+        # No text is not Greek text: `if greektext detect < empty.txt` must not succeed.
         return EXIT_OK if total and greek == total else EXIT_NOT_GREEK
 
     transform = _transform(args)
@@ -224,7 +234,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.print_help(sys.stderr)
         return EXIT_USAGE
 
-    _use_utf8(sys.stdin)
+    if not args.text and sys.stdin is None:  # started with stdin closed (`greektext upper <&-`)
+        print("greektext: no TEXT given and stdin is closed", file=sys.stderr)
+        return EXIT_USAGE
+    _use_utf8(sys.stdin, "utf-8-sig")  # also drops the BOM that Windows editors write
     _use_utf8(sys.stdout)
     try:
         status = _run(args, _inputs(args.text, sys.stdin), sys.stdout, getattr(args, "json", False))
@@ -233,4 +246,6 @@ def main(argv: Sequence[str] | None = None) -> int:
         devnull = os.open(os.devnull, os.O_WRONLY)
         os.dup2(devnull, sys.stdout.fileno())
         return EXIT_BROKEN_PIPE
+    except KeyboardInterrupt:
+        return EXIT_INTERRUPTED
     return status

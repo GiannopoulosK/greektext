@@ -96,6 +96,51 @@ def test_detect_empty_input_is_not_greek(
     assert (code, out) == (1, "")
 
 
+def test_detect_skips_blank_lines(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    code, out = run(["detect"], capsys, monkeypatch, stdin="Καλημέρα\n\n  \nΚόσμε\n")
+    assert (code, out) == (0, "greek\n\n\ngreek\n")
+    code, out = run(["detect"], capsys, monkeypatch, stdin="\n \n")
+    assert (code, out) == (1, "\n\n")
+    code, out = run(["--json", "detect"], capsys, monkeypatch, stdin="\n")
+    assert json.loads(out) == {"input": "", "output": None, "ratio": None}
+
+
+def test_closed_stdin(capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(sys, "stdin", None)
+    assert main(["upper"]) == 2
+    assert "stdin is closed" in capsys.readouterr().err
+    assert main(["upper", "α"]) == 0  # TEXT arguments do not need stdin
+
+
+def test_keyboard_interrupt(monkeypatch: pytest.MonkeyPatch) -> None:
+    class Interrupted:  # stdin where Ctrl-C arrives while reading
+        def __iter__(self) -> Interrupted:
+            return self
+
+        def __next__(self) -> str:
+            raise KeyboardInterrupt
+
+    monkeypatch.setattr(sys, "stdin", Interrupted())
+    assert main(["upper"]) == 130
+
+
+@pytest.mark.parametrize(
+    ("argv", "message"),
+    [
+        (["slug", "--max-length", "abc", "α"], "not a whole number: 'abc'"),
+        (["detect", "--threshold", "half", "α"], "not a number: 'half'"),
+    ],
+)
+def test_bad_values_are_explained(
+    argv: list[str], message: str, capsys: pytest.CaptureFixture[str]
+) -> None:
+    with pytest.raises(SystemExit):
+        main(argv)
+    assert message in capsys.readouterr().err
+
+
 def test_text_starting_with_a_dash(
     capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -143,7 +188,7 @@ def test_broken_pipe(monkeypatch: pytest.MonkeyPatch, tmp_path: object) -> None:
     monkeypatch.setattr(sys, "stdout", ClosedPipe())
     monkeypatch.setattr(sys.stdout, "fileno", lambda: 99)
     monkeypatch.setattr(os, "dup2", lambda a, b: dup2_calls.append((a, b)))
-    assert main(["upper"]) == 1
+    assert main(["upper"]) == 141
     assert dup2_calls == [(dup2_calls[0][0], 99)]
 
 
@@ -230,3 +275,42 @@ def test_argv_that_the_locale_cannot_encode(monkeypatch: pytest.MonkeyPatch) -> 
 
     monkeypatch.setattr(os, "fsencode", ascii_fsencode)
     assert cli_module._utf8_argv(["Μάιος", "abc"]) == ["Μάιος", "abc"]
+
+
+def test_subprocess_drops_a_bom_on_stdin() -> None:
+    proc = cli("--json", "latin", stdin="﻿Αθήνα\nΑθήνα\n".encode())
+    lines = proc.stdout.decode("utf-8").splitlines()
+    assert [json.loads(line)["input"] for line in lines] == ["Αθήνα", "Αθήνα"]
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX file descriptors")
+def test_subprocess_closed_stdin() -> None:
+    proc = subprocess.run(
+        [sys.executable, "-m", "greektext", "upper"],
+        capture_output=True,
+        check=False,
+        preexec_fn=lambda: os.close(0),  # `greektext upper <&-`
+    )
+    assert proc.returncode == 2
+    assert b"stdin is closed" in proc.stderr
+
+
+@pytest.mark.skipif(os.name == "nt", reason="POSIX pipes")
+def test_subprocess_broken_pipe() -> None:
+    proc = subprocess.Popen(
+        [sys.executable, "-m", "greektext", "upper"],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    assert proc.stdout is not None
+    assert proc.stdin is not None
+    assert proc.stderr is not None
+    proc.stdout.close()  # the reader goes away, like `| head`
+    try:
+        proc.stdin.write("Αθήνα\n".encode() * 200_000)
+        proc.stdin.close()
+    except BrokenPipeError:  # pragma: no cover - the CLI may exit before reading everything
+        pass
+    assert proc.wait(timeout=60) == 141
+    assert proc.stderr.read() == b""

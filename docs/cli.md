@@ -22,18 +22,22 @@ greektext --version
 - `--json` (before or after the subcommand) prints one JSON object per line:
   `{"input": ..., "output": ...}`; `detect` adds `"ratio"`.
 - `detect` prints `greek` or `not-greek` for each input and exits 0 only if there is input
-  and every input is Greek (empty input exits 1), so it works in shell conditions.
-  `--threshold` must be between 0 and 1.
+  and every input is Greek, so it works in shell conditions. Blank lines print an empty line
+  (`null` in JSON) and do not count; input with no text at all exits 1. `--threshold` must be
+  between 0 and 1.
 - Text that starts with a dash needs `--` before it, as with most commands:
   `greektext upper -- "-άλφα"`.
 - Input and output are always UTF-8, whatever the console or locale encoding, so Windows
-  consoles and `LC_ALL=C` shells do not break Greek text.
+  consoles and `LC_ALL=C` shells do not break Greek text. A UTF-8 BOM at the start of stdin is
+  dropped.
 
 | Exit code | Meaning |
 |---|---|
 | 0 | success |
 | 1 | `detect` found non-Greek input |
 | 2 | usage error |
+| 130 | interrupted (Ctrl-C) |
+| 141 | the reader of the output went away (`greektext slug < big.txt \| head`) |
 
 ```console
 $ greektext upper "Μάιος"

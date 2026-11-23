@@ -19,6 +19,8 @@ All notable changes to this project are documented here. The format follows
   JSON (plain output still passes them through unchanged).
 - CLI `detect` exits 1 on empty input instead of succeeding vacuously, and `--threshold`
   must be between 0 and 1.
+- `upper` drops a stray iota subscript (U+0345) that is not on a Greek letter instead of
+  turning it into a capital iota.
 
 ## [0.4.0] - 2026-11-23
 

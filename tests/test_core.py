@@ -105,6 +105,11 @@ class TestUpper:
     def test_tonos_does_not_leak_across_words(self) -> None:
         assert upper("πά ιδέα") == "ΠΑ ΙΔΕΑ"
 
+    @pytest.mark.parametrize("text", ["\u0345", "A\u0345", " \u0345x"])
+    def test_stray_iota_subscript_is_dropped(self, text: str) -> None:
+        assert "\u0399" not in upper(text)  # not turned into a capital iota
+        assert fold(upper(text)) == fold(text)
+
     def test_tonos_does_not_leak_across_non_greek(self) -> None:
         assert upper("ά-ι") == "Α-Ι"
 

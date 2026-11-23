@@ -16,6 +16,7 @@ from ._chars import (
     SIGMA,
     TONOS,
     UPPER_DROPS,
+    YPOGEGRAMMENI,
 )
 
 __all__ = ["fix_final_sigma", "lower", "upper"]
@@ -104,7 +105,10 @@ def upper(text: str) -> str:
         marks = decomposed[i + 1 : j]
         i = j
         if base not in GREEK_LETTERS:
-            out.append(unicodedata.normalize("NFC", base + marks).upper())
+            # str.upper() turns a stray iota subscript into a capital iota (U+0345 -> U+0399);
+            # it only belongs to Greek letters, so drop it like every other Greek capital does.
+            cluster = (base + marks).replace(YPOGEGRAMMENI, "")
+            out.append(unicodedata.normalize("NFC", cluster).upper())
             prev_base, prev_tonos = "", False
             continue
         low = base.lower()

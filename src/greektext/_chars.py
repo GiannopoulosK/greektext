@@ -12,6 +12,7 @@ import unicodedata
 
 TONOS = "\u0301"  # COMBINING ACUTE ACCENT, what NFD turns the tonos / oxia into
 DIALYTIKA = "\u0308"  # COMBINING DIAERESIS
+YPOGEGRAMMENI = "\u0345"  # COMBINING GREEK YPOGEGRAMMENI (iota subscript)
 
 #: Ranges of combining *diacritical* marks. ``fold`` deletes all of them; other combining
 #: characters (Indic vowel signs and the like) are part of their letters and are kept.

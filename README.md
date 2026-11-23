@@ -167,11 +167,20 @@ Pure Python, all tables precompiled at import. On 1 MB of mixed Greek text
 | Function | Time (1 MB) | Throughput |
 |---|---:|---:|
 | `strip_accents` | 0.04 s | 23 MB/s |
-| `fold` | 0.14 s | 7 MB/s |
-| `upper` | 0.35 s | 2.9 MB/s |
-| `to_latin` | 0.57 s | 1.7 MB/s |
-| `slugify` | 0.62 s | 1.6 MB/s |
-| `phonetic_key` | 0.91 s | 1.1 MB/s |
+| `fold` | 0.15 s | 6.5 MB/s |
+| `upper` | 0.31 s | 3.2 MB/s |
+| `to_latin` | 0.62 s | 1.6 MB/s |
+| `slugify` | 0.69 s | 1.4 MB/s |
+| `phonetic_key` | 1.01 s | 1.0 MB/s |
+
+## Versioning
+
+greektext follows [Semantic Versioning](https://semver.org/). The public API is everything in
+`greektext.__all__` and the `greektext` command; the `greektext._*` modules are private. A
+change in output that fixes a wrong result (a misspelled transliteration, a missed final sigma)
+can come in a minor release and is listed in the [changelog](https://github.com/GiannopoulosK/greektext/blob/main/CHANGELOG.md); other changes to
+existing output wait for a major release. The exact spelling of `phonetic_key` keys is not part
+of the API: compare keys, do not store them.
 
 ## License
 

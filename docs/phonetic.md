@@ -47,6 +47,9 @@ stable, because a Latin `h` on its own is read as η.
 - The dialytika is dropped by `fold`, so `αϋπνία` is keyed like `αυπνία`.
 - A Latin `h` on its own is η, so English-style spellings that use h for χ (`Hristos`) do not
   match; `Christos` and `Xristos` do.
+- The sound rules are applied until nothing changes, so a vowel can merge with a following pair:
+  `Ανδρέου` (ε + ου) is keyed `andrev` like `Ανδρέβ`, and `Θεοί` is keyed `thi`. Greek and
+  Greeklish spellings of the same word still get the same key.
 - A lone Latin `b` is the μπ sound (`Bampis` matches `Μπάμπης`), not β.
 - Unrelated words can share a key (`Bory` and `μπορεί`). Use the key to find candidates, not as
   proof that two names are the same.

@@ -13,6 +13,8 @@ All notable changes to this project are documented here. The format follows
   becomes `ΑΘΗΝΑ` instead of `AΘHNA`.
 - `fix_final_sigma` (and so `lower`) turns a ς with no letter before it into σ: abbreviations
   such as `Κ.Σ.` now lowercase to `κ.σ.`, not `κ.ς.`.
+- `phonetic_key` matches common English-style spellings: y before i/e is γ (`Yiannis`,
+  `Panayiotis`) and `ph` is φ (`Photis`).
 
 ## [0.4.0] - 2026-11-23
 

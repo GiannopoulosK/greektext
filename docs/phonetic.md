@@ -25,8 +25,9 @@ permanent identifier.
 1. `fold`: no accents, no case, ς → σ.
 2. Greek words: ELOT 743 transliteration with ξ → `ks` and χ → `x`, and a nasal γ before ξ or χ
    written `g`.
-3. Latin text: Greeklish aliases. w → o, h → i (except in th and ch), 8 → th, 3 → ks, c → k,
-   ch → x, u/y after a, e or h → v (αυ, ευ, ηυ), oy → ou.
+3. Latin text: Greeklish aliases. w → o, h → i (except in th, ch and ph), ph → f, 8 → th,
+   3 → ks, c → k, ch → x, u/y after a, e or h → v (αυ, ευ, ηυ), oy → ou, and y before i or e
+   → g (γ, as in *Yiannis*, *Panayiotis*).
 4. Drop everything that is not a letter.
 5. Repeat until nothing changes: i/y/ei/oi/yi → i, w → o, ai → e, af/au → av, ef/eu → ev,
    if → iv, ng/gk/gg → g, nx → gx, mp → b, nt → d, ch → x, ou → u, collapse doubled letters.
@@ -44,6 +45,8 @@ stable, because a Latin `h` on its own is read as η.
 - A Latin `x` is χ, as in Greeklish. ELOT 743 also writes ξ as `x` (`Xanthi`), so
   ELOT-transliterated words with ξ do not match their Greek spelling; `Ksanthi` does.
 - The dialytika is dropped by `fold`, so `αϋπνία` is keyed like `αυπνία`.
+- A Latin `h` on its own is η, so English-style spellings that use h for χ (`Hristos`) do not
+  match; `Christos` and `Xristos` do.
 - A lone Latin `b` is the μπ sound (`Bampis` matches `Μπάμπης`), not β.
 - Unrelated words can share a key (`Bory` and `μπορεί`). Use the key to find candidates, not as
   proof that two names are the same.

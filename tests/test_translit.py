@@ -103,6 +103,11 @@ class TestPhoneticKey:
             ("Ξάνθη", "Ksanthi", "3anthi"),
             ("Αιγαίο", "Egeo", "Aigaio"),
             ("ουρανός", "uranos", "ouranos"),
+            ("Γιάννης", "Giannis", "Yiannis", "Giannhs"),
+            ("Παναγιώτης", "Panayiotis", "Panagiotis"),
+            ("Γεώργιος", "Georgios", "Yeorgios"),
+            ("Φώτης", "Fotis", "Photis", "Fwtis"),
+            ("Χρήστος", "Christos", "Xristos", "Xrhstos"),
         ],
     )
     def test_collides(self, spellings: tuple[str, ...]) -> None:
@@ -118,6 +123,11 @@ class TestPhoneticKey:
 
     def test_nth_is_n_plus_th(self) -> None:
         assert phonetic_key("Ανθή") == "anthi"
+
+    def test_y_before_i_is_gamma_not_upsilon(self) -> None:
+        # "ay" is αυ (av) before a consonant, but "ayi" is a + γι.
+        assert phonetic_key("aytos") == phonetic_key("αυτός")
+        assert phonetic_key("Panayiotis") != phonetic_key("Panaviotis")
 
 
 class TestSlugify:

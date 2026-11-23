@@ -1,0 +1,42 @@
+site_name: greektext
+site_description: Greek text made easy to compare, search, transliterate and slugify.
+site_url: https://giannopoulosk.github.io/greektext/
+repo_url: https://github.com/GiannopoulosK/greektext
+repo_name: GiannopoulosK/greektext
+
+theme:
+  name: material
+  features:
+    - content.code.copy
+    - navigation.sections
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+nav:
+  - Home: index.md
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: false
+            docstring_style: google

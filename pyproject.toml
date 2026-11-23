@@ -1,0 +1,114 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "greektext"
+dynamic = ["version"]
+description = "Greek text made easy: accent-insensitive search keys, correct capitals and final sigma, ELOT 743 transliteration, Greeklish matching and slugs."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Konstantinos Giannopoulos", email = "giannopoulosk.data@gmail.com" }]
+keywords = [
+    "greek",
+    "greeklish",
+    "transliteration",
+    "elot 743",
+    "slugify",
+    "accents",
+    "unicode",
+    "normalization",
+    "search",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Natural Language :: Greek",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Text Processing :: Linguistic",
+    "Typing :: Typed",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-cov>=5",
+    "hypothesis>=6.100",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "pre-commit>=3",
+]
+docs = ["mkdocs-material>=9.5", "mkdocstrings[python]>=0.26"]
+
+[project.scripts]
+greektext = "greektext.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/GiannopoulosK/greektext"
+Documentation = "https://giannopoulosk.github.io/greektext/"
+Repository = "https://github.com/GiannopoulosK/greektext"
+Issues = "https://github.com/GiannopoulosK/greektext/issues"
+Changelog = "https://github.com/GiannopoulosK/greektext/blob/main/CHANGELOG.md"
+
+[tool.hatch.version]
+path = "src/greektext/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/greektext"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/greektext", "tests", "README.md", "CHANGELOG.md", "LICENSE"]
+
+# --------------------------------------------------------------------------- tooling
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "C4", "PT", "PIE", "RET"]
+# Greek letters that look like Latin ones are the whole point of this library.
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["greektext"]
+
+[tool.mypy]
+strict = true
+python_version = "3.10"
+files = ["src/greektext", "tests"]
+warn_unreachable = true
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests", "src/greektext"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--doctest-modules",
+    "--import-mode=importlib",
+]
+doctest_optionflags = ["NORMALIZE_WHITESPACE"]
+xfail_strict = true
+
+[tool.coverage.run]
+source = ["greektext"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 95
+show_missing = true
+skip_covered = true
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError", "@overload"]

@@ -10,6 +10,8 @@ All notable changes to this project are documented here. The format follows
 
 - `upper` keeps the accent on the disjunctive "ή" ("or"): `Μάιο ή Ιούνιο` becomes
   `ΜΑΪΟ Ή ΙΟΥΝΙΟ`, so it is not read as the article `Η`.
+- `to_latin` writes a single capital letter next to an all-caps word in all caps:
+  `Θ. ΠΑΠΑΔΟΠΟΥΛΟΣ` becomes `TH. PAPADOPOULOS` instead of `Th. PAPADOPOULOS`.
 
 ### Fixed
 

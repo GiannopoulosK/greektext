@@ -156,7 +156,7 @@ def _tokenize(text: str) -> list[_Letter | str]:
     return items
 
 
-def _word_to_latin(word: list[_Letter], scheme: Scheme) -> str:
+def _word_to_latin(word: list[_Letter], scheme: Scheme, all_caps: bool) -> str:
     pieces: list[tuple[str, bool]] = []  # (latin, source letter was a capital)
     n = len(word)
     i = 0
@@ -194,26 +194,59 @@ def _word_to_latin(word: list[_Letter], scheme: Scheme) -> str:
             pieces.append((single, letter.upper))
         i += 1
 
-    if n >= 2 and all(letter.upper for letter in word):
+    if all_caps:
         return "".join(latin for latin, _ in pieces).upper()
     return "".join(latin[:1].upper() + latin[1:] if cap else latin for latin, cap in pieces)
 
 
 def transliterate(text: str, scheme: Scheme) -> str:
     """Transliterate the Greek words in ``text`` with ``scheme``; everything else passes through."""
-    out: list[str] = []
-    word: list[_Letter] = []
+    # Group the letters into words; everything between words stays a plain string.
+    segments: list[list[_Letter] | str] = []
     for item in _tokenize(text):
         if isinstance(item, _Letter):
-            word.append(item)
+            if segments and isinstance(segments[-1], list):
+                segments[-1].append(item)
+            else:
+                segments.append([item])
+        else:
+            segments.append(item)
+
+    caps = [isinstance(s, list) and _is_caps_word(s) for s in segments]
+    out: list[str] = []
+    for k, segment in enumerate(segments):
+        if isinstance(segment, str):
+            out.append(segment)
             continue
-        if word:
-            out.append(_word_to_latin(word, scheme))
-            word = []
-        out.append(item)
-    if word:
-        out.append(_word_to_latin(word, scheme))
+        all_caps = caps[k] or (
+            len(segment) == 1 and segment[0].upper and _caps_neighbour(segments, caps, k)
+        )
+        out.append(_word_to_latin(segment, scheme, all_caps))
     return "".join(out)
+
+
+def _is_caps_word(word: list[_Letter]) -> bool:
+    return len(word) >= 2 and all(letter.upper for letter in word)
+
+
+def _caps_neighbour(segments: list[list[_Letter] | str], caps: list[bool], k: int) -> bool:
+    """Is the nearest Greek word before or after ``segments[k]`` written in all caps?
+
+    The search stops at text containing other letters, so "Θ. Smith" is not affected by a
+    capitalised Greek word further away.
+    """
+    for step in (-1, 1):
+        j = k + step
+        while 0 <= j < len(segments):
+            segment = segments[j]
+            if isinstance(segment, list):
+                if caps[j]:
+                    return True
+                break
+            if any(ch.isalpha() for ch in segment):
+                break
+            j += step
+    return False
 
 
 def to_latin(text: str, *, scheme: str = "elot743") -> str:
@@ -229,7 +262,9 @@ def to_latin(text: str, *, scheme: str = "elot743") -> str:
       word is "g".
 
     Case follows the source word: an all-caps word (two or more letters) gives all caps,
-    otherwise a capital letter capitalizes only the first Latin letter of its output.
+    otherwise a capital letter capitalizes only the first Latin letter of its output. A
+    single capital letter next to an all-caps word is part of an all-caps line and gives
+    all caps too ("Θ. ΠΑΠΑΔΟΠΟΥΛΟΣ" -> "TH. PAPADOPOULOS").
     Non-Greek text passes through unchanged.
 
     >>> to_latin("Θεσσαλονίκη")

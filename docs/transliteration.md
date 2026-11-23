@@ -56,3 +56,7 @@ For slugs and casual display. Same as `elot743` except:
 Case follows the source word. A Greek word in all caps (two or more letters) gives all caps:
 `ΘΕΣΣΑΛΟΝΙΚΗ` → `THESSALONIKI`. Otherwise a capital Greek letter capitalizes only the first Latin
 letter of its output: `Θεσσαλονίκη` → `Thessaloniki`, `Χανιά` → `Chania`, `Ψ` → `Ps`.
+
+A single capital letter is ambiguous, so it follows its nearest Greek neighbour: next to an
+all-caps word it is part of an all-caps line (`Θ. ΠΑΠΑΔΟΠΟΥΛΟΣ` → `TH. PAPADOPOULOS`),
+otherwise it is a capital (`Θ. Παπαδόπουλος` → `Th. Papadopoulos`).

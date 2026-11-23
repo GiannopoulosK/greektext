@@ -56,6 +56,12 @@ class TestElot743:
             ("Ο", "O"),
             ("ΟΙ", "OI"),
             ("Ψ", "Ps"),
+            # a single capital letter takes the case of an all-caps neighbour
+            ("Θ. ΠΑΠΑΔΟΠΟΥΛΟΣ", "TH. PAPADOPOULOS"),
+            ("ΠΑΠΑΔΟΠΟΥΛΟΣ Θ.", "PAPADOPOULOS TH."),
+            ("Θ. Smith ΠΑΠΑ", "Th. Smith PAPA"),  # other letters stop the search
+            ("Ψ Θ", "Ps Th"),
+            ("Η ΘΕΣΗ ΤΟΥ Χ", "I THESI TOU CH"),
             # pass-through
             ("Hello, κόσμε! 123", "Hello, kosme! 123"),
             ("ϝ", "ϝ"),  # archaic letters have no mapping

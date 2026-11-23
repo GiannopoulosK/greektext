@@ -23,6 +23,8 @@ theme:
 
 nav:
   - Home: index.md
+  - Transliteration: transliteration.md
+  - Matching Greeklish: phonetic.md
 markdown_extensions:
   - admonition
   - tables

@@ -102,6 +102,24 @@ class TestUpper:
         assert upper(text) == expected
         assert upper(NFD(text)) == expected
 
+    @pytest.mark.parametrize(
+        ("text", "expected"),
+        [
+            ("ή", "Ή"),
+            ("Ή", "Ή"),
+            ("ή,", "Ή,"),
+            ("(ή)", "(Ή)"),
+            ("ἤ ἢ", "Ή Ή"),  # polytonic
+            ("η", "Η"),  # the article
+            ("ήταν", "ΗΤΑΝ"),  # ή inside a word
+            ("ήx", "ΗX"),  # followed by a letter: not a word on its own
+            ("xή", "XΗ"),
+        ],
+    )
+    def test_disjunctive_eta(self, text: str, expected: str) -> None:
+        assert upper(text) == expected
+        assert upper(NFD(text)) == expected
+
     def test_tonos_does_not_leak_across_words(self) -> None:
         assert upper("πά ιδέα") == "ΠΑ ΙΔΕΑ"
 

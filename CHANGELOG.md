@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- `upper` keeps the accent on the disjunctive "ή" ("or"): `Μάιο ή Ιούνιο` becomes
+  `ΜΑΪΟ Ή ΙΟΥΝΙΟ`, so it is not read as the article `Η`.
+
 ### Fixed
 
 - `fix_lookalikes` no longer makes all-caps Greek words worse: a letter that only exists in one

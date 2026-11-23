@@ -60,6 +60,9 @@ When the tonos sits on the first vowel of a pair that would otherwise be a digra
 υι, αυ, ευ, ηυ, ου), the capital form shows the split with a dialytika on the second vowel:
 *Μάιος* → *ΜΑΪΟΣ*, *ρολόι* → *ΡΟΛΟΪ*, *άυλος* → *ΑΫΛΟΣ*.
 
+One word keeps its accent: the disjunctive *ή* ("or") is written *Ή* in capitals, so that it
+is not read as the article *Η* (*ΜΑΪΟ Ή ΙΟΥΝΙΟ*).
+
 ```python
 >>> from greektext import upper
 >>> upper("Μάιος, ρολόι, προϊόν, Ἀθῆναι")

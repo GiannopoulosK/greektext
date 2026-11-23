@@ -50,6 +50,7 @@ def test_fold_final_sigma() -> None:
         ("Μάιος", "ΜΑΪΟΣ"),
         ("ρολόι", "ΡΟΛΟΪ"),
         ("προϊόν", "ΠΡΟΪΟΝ"),
+        ("Μάιο ή Ιούνιο", "ΜΑΪΟ Ή ΙΟΥΝΙΟ"),  # the disjunctive ή keeps its accent
     ],
 )
 def test_upper(text: str, expected: str) -> None:

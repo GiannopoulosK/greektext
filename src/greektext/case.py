@@ -21,6 +21,9 @@ from ._chars import (
 
 __all__ = ["fix_final_sigma", "lower", "upper"]
 
+#: Accents that mark a stressed vowel: tonos/oxia, varia, perispomeni.
+_ACCENTS = frozenset("\u0301\u0300\u0342")
+
 # σ that ends a Greek word: after a Greek letter (or a mark on one), and not followed by another
 # word character, a mark, or an elision apostrophe.
 _SIGMA_AT_END = re.compile(
@@ -77,8 +80,9 @@ def upper(text: str) -> str:
     Greek capitals are written without accents, so the tonos (and any polytonic mark) is
     dropped while the dialytika is kept. When a tonos on the first vowel of a would-be digraph
     (αι ει οι υι αυ ευ ηυ ου) is what keeps the two vowels apart, the capital form shows it
-    with a dialytika on the second vowel instead. Non-Greek characters use ``str.upper()``.
-    Returns NFC.
+    with a dialytika on the second vowel instead. The one word that keeps its accent is the
+    disjunctive "ή" ("or"), written "Ή" so it is not read as the article "Η". Non-Greek
+    characters use ``str.upper()``. Returns NFC.
 
     >>> upper("καλημέρα")
     'ΚΑΛΗΜΕΡΑ'
@@ -90,11 +94,14 @@ def upper(text: str) -> str:
     'ΠΡΟΪΟΝ'
     >>> upper("Hello κόσμε")
     'HELLO ΚΟΣΜΕ'
+    >>> upper("Τον Μάιο ή τον Ιούνιο, η θάλασσα")
+    'ΤΟΝ ΜΑΪΟ Ή ΤΟΝ ΙΟΥΝΙΟ, Η ΘΑΛΑΣΣΑ'
     """
     out: list[str] = []
     # The previous Greek base letter (lowercase) and whether it carried a tonos.
     prev_base = ""
     prev_tonos = False
+    prev_letter = False  # whether the previous character was a letter (of any script)
     decomposed = unicodedata.normalize("NFD", text)
     i, n = 0, len(decomposed)
     while i < n:
@@ -109,7 +116,7 @@ def upper(text: str) -> str:
             # it only belongs to Greek letters, so drop it like every other Greek capital does.
             cluster = (base + marks).replace(YPOGEGRAMMENI, "")
             out.append(unicodedata.normalize("NFC", cluster).upper())
-            prev_base, prev_tonos = "", False
+            prev_base, prev_tonos, prev_letter = "", False, base.isalpha()
             continue
         low = base.lower()
         has_tonos = TONOS in marks
@@ -122,6 +129,13 @@ def upper(text: str) -> str:
             and low in DIGRAPHS.get(prev_base, ())
         ):
             kept += DIALYTIKA
+        elif (
+            low == "η"
+            and not _ACCENTS.isdisjoint(marks)
+            and not prev_letter
+            and not (i < n and decomposed[i].isalpha())
+        ):
+            kept += TONOS  # the disjunctive ή on its own: Ή, not the article Η
         out.append(base.upper() + kept)
-        prev_base, prev_tonos = low, has_tonos
+        prev_base, prev_tonos, prev_letter = low, has_tonos, True
     return unicodedata.normalize("NFC", "".join(out))

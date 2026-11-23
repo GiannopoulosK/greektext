@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-23
+
+### Added
+
+- Full README, documentation site (Greek text rules, transliteration, matching Greeklish,
+  command line, recipes for Django, search and keylex, API reference).
+- `benchmarks/bench.py` for `fold`, `to_latin` and friends on 1 MB of Greek text.
+
 ## [0.3.0] - 2026-11-23
 
 ### Added
@@ -44,7 +52,8 @@ All notable changes to this project are documented here. The format follows
   release workflow and an empty docs site.
 - The specification's acceptance table as (pending) parametrized tests.
 
-[Unreleased]: https://github.com/GiannopoulosK/greektext/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/GiannopoulosK/greektext/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/GiannopoulosK/greektext/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/GiannopoulosK/greektext/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/GiannopoulosK/greektext/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/GiannopoulosK/greektext/compare/v0.0.1...v0.1.0

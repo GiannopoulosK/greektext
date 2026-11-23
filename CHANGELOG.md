@@ -17,6 +17,8 @@ All notable changes to this project are documented here. The format follows
   `Panayiotis`) and `ph` is φ (`Photis`).
 - CLI `--json` output is always valid UTF-8: input bytes that are not UTF-8 become U+FFFD in
   JSON (plain output still passes them through unchanged).
+- CLI `detect` exits 1 on empty input instead of succeeding vacuously, and `--threshold`
+  must be between 0 and 1.
 
 ## [0.4.0] - 2026-11-23
 

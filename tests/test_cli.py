@@ -89,6 +89,20 @@ def test_detect(capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPa
     ]
 
 
+def test_detect_empty_input_is_not_greek(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    code, out = run(["detect"], capsys, monkeypatch, stdin="")
+    assert (code, out) == (1, "")
+
+
+def test_text_starting_with_a_dash(
+    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    code, out = run(["upper", "--", "-άλφα"], capsys, monkeypatch)
+    assert (code, out) == (0, "-ΑΛΦΑ\n")
+
+
 def test_no_command_is_usage_error(capsys: pytest.CaptureFixture[str]) -> None:
     assert main([]) == 2
     assert "usage" in capsys.readouterr().err
@@ -96,7 +110,14 @@ def test_no_command_is_usage_error(capsys: pytest.CaptureFixture[str]) -> None:
 
 @pytest.mark.parametrize(
     "argv",
-    [["nope"], ["latin", "--scheme", "iso", "α"], ["slug", "--max-length", "-1", "α"]],
+    [
+        ["nope"],
+        ["latin", "--scheme", "iso", "α"],
+        ["slug", "--max-length", "-1", "α"],
+        ["detect", "--threshold", "1.5", "α"],
+        ["detect", "--threshold", "-0.1", "α"],
+        ["detect", "--threshold", "half", "α"],
+    ],
 )
 def test_bad_arguments_exit_2(argv: list[str], capsys: pytest.CaptureFixture[str]) -> None:
     with pytest.raises(SystemExit) as exc:

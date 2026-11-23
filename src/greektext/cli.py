@@ -58,6 +58,13 @@ def _transform(args: argparse.Namespace) -> Transform:
     return simple[command]
 
 
+def _ratio(value: str) -> float:
+    number = float(value)
+    if not 0.0 <= number <= 1.0:
+        raise argparse.ArgumentTypeError(f"must be between 0 and 1, got {value}")
+    return number
+
+
 def _non_negative_int(value: str) -> int:
     number = int(value)
     if number < 0:
@@ -115,9 +122,9 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--max-length", type=_non_negative_int, default=None, metavar="N")
     p.add_argument("--scheme", choices=schemes, default="elot743")
 
-    p = add("detect", "print 'greek' or 'not-greek'; exit 0 if all input is Greek, else 1")
+    p = add("detect", "print 'greek' or 'not-greek'; exit 0 only if all input is Greek")
     p.add_argument(
-        "--threshold", type=float, default=0.5, help="minimum Greek ratio (default: 0.5)"
+        "--threshold", type=_ratio, default=0.5, help="minimum Greek ratio, 0 to 1 (default: 0.5)"
     )
 
     return parser
@@ -178,14 +185,15 @@ def _run(args: argparse.Namespace, inputs: Iterable[str], out: TextIO, as_json: 
             out.write(plain + "\n")
 
     if args.command == "detect":
-        status = EXIT_OK
+        total = greek = 0
         for item in inputs:
             ratio = greek_ratio(item)
             verdict = "greek" if ratio >= args.threshold else "not-greek"
-            if verdict != "greek":
-                status = EXIT_NOT_GREEK
+            total += 1
+            greek += verdict == "greek"
             emit({"input": item, "output": verdict, "ratio": ratio}, verdict)
-        return status
+        # Empty input is not Greek text: `if greektext detect < empty.txt` must not succeed.
+        return EXIT_OK if total and greek == total else EXIT_NOT_GREEK
 
     transform = _transform(args)
     for item in inputs:

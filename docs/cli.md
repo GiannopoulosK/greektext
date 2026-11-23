@@ -21,8 +21,11 @@ greektext --version
   `cat names.txt | greektext slug > slugs.txt`.
 - `--json` (before or after the subcommand) prints one JSON object per line:
   `{"input": ..., "output": ...}`; `detect` adds `"ratio"`.
-- `detect` prints `greek` or `not-greek` for each input and exits 0 if every input is Greek,
-  1 otherwise, so it works in shell conditions.
+- `detect` prints `greek` or `not-greek` for each input and exits 0 only if there is input
+  and every input is Greek (empty input exits 1), so it works in shell conditions.
+  `--threshold` must be between 0 and 1.
+- Text that starts with a dash needs `--` before it, as with most commands:
+  `greektext upper -- "-άλφα"`.
 - Input and output are always UTF-8, whatever the console or locale encoding, so Windows
   consoles and `LC_ALL=C` shells do not break Greek text.
 

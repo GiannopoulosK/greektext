@@ -14,6 +14,7 @@ from types import MappingProxyType
 from typing import Literal, NamedTuple
 
 from ._chars import (
+    ACCENTS,
     DELETE_INVISIBLE,
     DIACRITICS,
     DIALYTIKA,
@@ -40,7 +41,7 @@ class Scheme:
     #: Consonant digraphs: γγ γκ γξ γχ.
     consonant_digraphs: Mapping[str, str]
     #: Overrides for consonant digraphs at the start of a word.
-    initial_digraphs: Mapping[str, str] = field(default_factory=dict)
+    initial_digraphs: Mapping[str, str] = field(default_factory=lambda: MappingProxyType({}))
     #: μπ -> (at the start or end of a word, inside a word).
     mp: tuple[str, str] = ("b", "mp")
 
@@ -106,9 +107,6 @@ SCHEMES: Mapping[str, Scheme] = MappingProxyType({"elot743": _ELOT743, "simple":
 #: word) gives the f form.
 _VOICED_AFTER_U = frozenset("αεηιοωυβγδζλμνρ")
 
-#: Accents that mark the first vowel of a pair as stressed, which splits the digraph.
-_ACCENTS = frozenset("\u0301\u0300\u0342")  # tonos/oxia, varia, perispomeni
-
 
 def _base_letters() -> Mapping[str, str]:
     """Each Greek letter -> its lowercase unaccented base (ϐ -> β, Ά -> α, ἅ -> α ...)."""
@@ -128,7 +126,7 @@ class _Letter(NamedTuple):
     base: str  # lowercase, unaccented
     original: str  # NFC of the letter with its marks
     upper: bool
-    accent: bool
+    accent: bool  # stressed (tonos, varia, perispomeni): a digraph cannot start here
     dialytika: bool
 
 
@@ -153,7 +151,7 @@ def _tokenize(text: str) -> list[_Letter | str]:
                     base=_BASE[ch],
                     original=unicodedata.normalize("NFC", ch + marks),
                     upper=ch.isupper(),
-                    accent=not _ACCENTS.isdisjoint(marks),
+                    accent=not ACCENTS.isdisjoint(marks),
                     dialytika=DIALYTIKA in marks,
                 )
             )

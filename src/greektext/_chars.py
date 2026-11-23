@@ -14,6 +14,9 @@ TONOS = "\u0301"  # COMBINING ACUTE ACCENT, what NFD turns the tonos / oxia into
 DIALYTIKA = "\u0308"  # COMBINING DIAERESIS
 YPOGEGRAMMENI = "\u0345"  # COMBINING GREEK YPOGEGRAMMENI (iota subscript)
 
+#: Marks that show a stressed vowel: tonos/oxia, varia, perispomeni.
+ACCENTS: frozenset[str] = frozenset("\u0301\u0300\u0342")
+
 #: The spacing GREEK YPOGEGRAMMENI (U+037A) is an older way to write the iota subscript after
 #: a letter ("αͺ" for "ᾳ"). Reading it as the combining mark lets it be handled like one.
 SPACING_YPOGEGRAMMENI: dict[int, str] = {0x037A: YPOGEGRAMMENI}

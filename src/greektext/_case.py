@@ -6,6 +6,7 @@ import re
 import unicodedata
 
 from ._chars import (
+    ACCENTS,
     DIACRITICS,
     DIALYTIKA,
     DIGRAPHS,
@@ -21,9 +22,6 @@ from ._chars import (
 )
 
 __all__ = ["fix_final_sigma", "lower", "upper"]
-
-#: Accents that mark a stressed vowel: tonos/oxia, varia, perispomeni.
-_ACCENTS = frozenset("\u0301\u0300\u0342")
 
 _SIGMAS = re.compile(f"[{SIGMA}{FINAL_SIGMA}]")
 
@@ -147,7 +145,7 @@ def upper(text: str) -> str:
             kept += DIALYTIKA
         elif (
             low == "η"
-            and not _ACCENTS.isdisjoint(marks)
+            and not ACCENTS.isdisjoint(marks)
             and not prev_letter
             and not (i < n and decomposed[i].isalpha())
         ):

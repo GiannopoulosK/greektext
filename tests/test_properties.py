@@ -5,8 +5,9 @@ from __future__ import annotations
 import re
 import unicodedata
 from collections.abc import Callable
+from typing import Literal
 
-from hypothesis import given
+from hypothesis import example, given
 from hypothesis import strategies as st
 
 from greektext import (
@@ -83,6 +84,15 @@ def test_nothing_raises(text: str) -> None:
     assert 0.0 <= ratio <= 1.0
     for form in ("NFC", "NFD", "NFKC", "NFKD"):
         normalize(text, form=form, lookalikes=True)
+
+
+@given(any_text, st.sampled_from(["NFC", "NFD", "NFKC", "NFKD"]), st.booleans())
+@example("\u03a1\u0301u", "NFC", True)  # Greek Ρ + acute becomes Latin P + acute = Ṕ
+def test_normalize_returns_the_requested_form(
+    text: str, form: Literal["NFC", "NFD", "NFKC", "NFKD"], lookalikes: bool
+) -> None:
+    out = normalize(text, form=form, lookalikes=lookalikes)
+    assert unicodedata.is_normalized(form, out)
 
 
 @given(ascii_text)

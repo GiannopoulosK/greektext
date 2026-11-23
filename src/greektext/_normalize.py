@@ -53,4 +53,8 @@ def normalize(
         text = fix_lookalikes(text)
     if final_sigma:
         text = fix_final_sigma(text)
+    if lookalikes:
+        # Swapping a letter changes what a following mark composes with (Greek Ρ + U+0301 has
+        # no precomposed form, Latin P + U+0301 is Ṕ), so restore the requested form.
+        text = unicodedata.normalize(cast(UnicodeForm, form), text)
     return text

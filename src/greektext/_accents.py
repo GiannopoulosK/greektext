@@ -41,7 +41,9 @@ def strip_accents(text: str, *, keep_dialytika: bool = True) -> str:
     'café Αθηνα'
     """
     table = STRIP_KEEP_DIALYTIKA if keep_dialytika else STRIP_ALL
-    text = unicodedata.normalize("NFC", text.translate(SPACING_YPOGEGRAMMENI)).translate(table)
+    if "\u037a" in text:
+        text = text.translate(SPACING_YPOGEGRAMMENI)
+    text = unicodedata.normalize("NFC", text).translate(table)
     if not DIACRITICS.isdisjoint(text):
         # Marks NFC could not compose onto a Greek letter (rare stacks such as "ά" + U+0304).
         text = _strip_loose_marks(text, keep_dialytika)

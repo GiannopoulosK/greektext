@@ -113,7 +113,9 @@ def upper(text: str) -> str:
     prev_base = ""
     prev_tonos = False
     prev_letter = False  # whether the previous character was a letter (of any script)
-    decomposed = unicodedata.normalize("NFD", text.translate(SPACING_YPOGEGRAMMENI))
+    if "\u037a" in text:
+        text = text.translate(SPACING_YPOGEGRAMMENI)
+    decomposed = unicodedata.normalize("NFD", text)
     i, n = 0, len(decomposed)
     while i < n:
         base = decomposed[i]

@@ -24,9 +24,11 @@ two vowels apart (`άυλος` → `aylos`, `αϋπνία` → `aypnia`, `ρολ
 
 ELOT 743 (2nd edition, 2001) type 2 *transcription* is the system also published by the UN
 (1987) and as ISO 843:1997 transcription; they are essentially equivalent. The table above was
-checked row by row on 2026-11-23 against the Modern Greek comparison table in
-[Romanization of Greek](https://en.wikipedia.org/wiki/Romanization_of_Greek) (Wikipedia, ELOT 743 /
-UN columns):
+checked row by row on 2026-11-23 against the primary sources: the UNGEGN Working Group on
+Romanization Systems [report on Greek](https://unstats.un.org/unsd/ungegn/working_groups/wg5/documents/wgrr4greek.pdf)
+(the UN system, "based on the ELOT 743 conversion system") and the UK government
+[Romanization of Greek](https://assets.publishing.service.gov.uk/media/5ab4df04e5274a1aa2d41460/ROMANIZATION_OF_GREEK.pdf)
+(ELOT 743, BGN/PCGN 1996 agreement), whose worked examples are part of the test suite:
 
 | Row | Result |
 |---|---|
@@ -34,7 +36,7 @@ UN columns):
 | αι ει οι ου υι | match |
 | αυ ευ ηυ | match: v "before vowels or voiced consonants", f "before voiceless consonants and word-finally" |
 | γγ γξ γχ | match (ng, nx, nch) |
-| γκ | **differs**: the Wikipedia table lists *gk* word-initially and *ng* word-medially, while other summaries of ELOT 743 give *gk* in every position. greektext follows the specification and always writes *gk* (`αγκάθι` → `agkathi`). This row should be re-checked against the ELOT 743 standard text itself. |
+| γκ | match: *gk* in every position, "converted according to the conversion rules of each character" (`Λαγκάδα` → `Lagkada`). The *ng* for a medial γκ found in some summaries comes from the older BGN/PCGN 1962 system, which ELOT 743 replaced in 1996. |
 | μπ | match: b word-initially and word-finally, mp inside |
 | ντ | match: nt in every position |
 | Broken digraphs | match: "an accent over the first letter of the pair indicates vowels which should be taken (and romanized) separately"; a diaeresis on the second letter does the same |

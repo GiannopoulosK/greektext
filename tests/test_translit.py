@@ -8,6 +8,42 @@ import pytest
 
 from greektext import phonetic_key, slugify, to_latin
 
+# Worked examples of the ELOT 743 / BGN-PCGN 1996 table (UK government "Romanization of Greek",
+# checked October 2017). The official romanization marks stress and dieresis; greektext writes
+# plain ASCII, so the expected values are compared without them.
+_ELOT743_OFFICIAL = """
+Άρτα Árta | Ακταίο Aktaío | Νεράϊδα Neráïda | Μαυροβούνι Mavrovoúni | Ναύπλιο Náfplio
+Βόλος Vólos | Γαράζο Garázo | Γουριά Gouriá | Άγναντα Ágnanta | Γλυφάδα Glyfáda
+Αγχίαλος Anchíalos | Λόγγος Lóngos | Λαγκάδα Lagkáda | Δένδρα Déndra | Ερέτρια Erétria
+Ηράκλειο Irákleio | Μαρινέϊκα Marinéïka | Ρεύματα Révmata | Λευκάδα Lefkáda | Ζεμενό Zemenó
+Θεσπιές Thespiés | Ίρια Íria | Καλαμάκι Kalamáki | Λίμνη Límni | Μαραθώνας Marathónas
+Μπέχρος Béchros | Τέμπη Témpi | Νεστάνη Nestáni | Ντία Ntía | Ξάνθη Xánthi | Όθος Óthos
+Δελφοί Delfoí | Δοϊράνι Doïráni | Βούναργο Voúnargo | Παύλος Pávlos | Μερόπι Merópi
+Άσσος Ássos | Σάμος Sámos | Τίρυνθα Tíryntha | Υλίκη Ylíki | Φιλοθέη Filothéi
+Χαραυγή Charavgí | Ψαρά Psará | Ωρωπός Oropós | Αθήνα Athína | Οινούσσες Oinoússes
+Οίτη Oíti | Αύρα Ávra | Γαύριο Gávrio | Καλλιπεύκα Kallipéfka
+"""
+
+
+def _plain(text: str) -> str:
+    return "".join(c for c in unicodedata.normalize("NFD", text) if not unicodedata.combining(c))
+
+
+@pytest.mark.parametrize(
+    ("greek", "official"),
+    [
+        tuple(pair.split())
+        for line in _ELOT743_OFFICIAL.strip().splitlines()
+        for pair in line.split(" | ")
+    ],
+)
+def test_elot743_official_examples(greek: str, official: str) -> None:
+    assert to_latin(greek) == _plain(official)
+
+
+def test_elot743_official_example_with_two_words() -> None:
+    assert to_latin("Πέντε Βρύσες") == "Pente Vryses"
+
 
 class TestElot743:
     @pytest.mark.parametrize(

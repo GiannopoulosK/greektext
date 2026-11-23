@@ -157,6 +157,10 @@ LATIN_TO_GREEK_HOMOGLYPHS: dict[str, str] = {
     "o": "ο",
 }
 
+#: Letters that have a twin in the other script.
+LATIN_HOMOGLYPHS: frozenset[str] = frozenset(LATIN_TO_GREEK_HOMOGLYPHS)
+GREEK_HOMOGLYPHS: frozenset[str] = frozenset(LATIN_TO_GREEK_HOMOGLYPHS.values())
+
 LATIN_TO_GREEK: dict[int, str] = str.maketrans(LATIN_TO_GREEK_HOMOGLYPHS)
 GREEK_TO_LATIN: dict[int, str] = str.maketrans(
     {greek: latin for latin, greek in LATIN_TO_GREEK_HOMOGLYPHS.items()}

@@ -75,10 +75,12 @@ The Greek question mark (U+037E) and ano teleia (U+0387) are canonically equival
 ## Lookalike letters
 
 Mixed keyboards produce words with Latin letters inside Greek ones (Latin "A", "o", "K").
-They look identical but break equality and search. `fix_lookalikes` takes a per-word majority
-vote and converts the minority's homoglyphs; words with no majority are left alone. Only true
-homoglyphs are converted (A B E Z H I K M N O P T X Y and o), never merely similar letters
-such as v/ν or u/υ.
+They look identical but break equality and search. `fix_lookalikes` decides per word: a letter
+that only exists in one script (Θ, λ, ά; L, s, v) settles it, as long as every letter of the
+other script has a twin, so all-caps `AΘHNA` becomes Greek even though most of its letters are
+Latin. Otherwise the majority script wins, and words with no majority are left alone. Only
+true homoglyphs are converted (A B E Z H I K M N O P T X Y and o), never merely similar
+letters such as v/ν or u/υ.
 
 ```python
 >>> from greektext import fix_lookalikes, greek_ratio

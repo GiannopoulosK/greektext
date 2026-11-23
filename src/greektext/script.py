@@ -4,7 +4,14 @@ from __future__ import annotations
 
 import re
 
-from ._chars import GREEK_LETTERS, GREEK_TO_LATIN, LATIN_LETTERS, LATIN_TO_GREEK
+from ._chars import (
+    GREEK_HOMOGLYPHS,
+    GREEK_LETTERS,
+    GREEK_TO_LATIN,
+    LATIN_HOMOGLYPHS,
+    LATIN_LETTERS,
+    LATIN_TO_GREEK,
+)
 from .accents import fold
 
 __all__ = ["fix_lookalikes", "greek_ratio", "is_greek", "sort_key"]
@@ -48,13 +55,22 @@ def is_greek(text: str, *, threshold: float = 0.5) -> bool:
 def _fix_word(match: re.Match[str]) -> str:
     word = match.group()
     greek = latin = 0
+    greek_only = latin_only = False  # a letter that cannot be a homoglyph of the other script
     for ch in word:
         if ch in GREEK_LETTERS:
             greek += 1
+            greek_only = greek_only or ch not in GREEK_HOMOGLYPHS
         elif ch in LATIN_LETTERS:
             latin += 1
+            latin_only = latin_only or ch not in LATIN_HOMOGLYPHS
     if not (greek and latin):
         return word
+    # A letter that exists in only one script decides, as long as every letter of the other
+    # script has a twin: "AΘΗNA" is Greek (Θ) even though most of its letters are Latin.
+    if greek_only and not latin_only:
+        return word.translate(LATIN_TO_GREEK)
+    if latin_only and not greek_only:
+        return word.translate(GREEK_TO_LATIN)
     if greek > latin:
         return word.translate(LATIN_TO_GREEK)
     if latin > greek:
@@ -65,11 +81,20 @@ def _fix_word(match: re.Match[str]) -> str:
 def fix_lookalikes(text: str) -> str:
     """Repair Latin/Greek homoglyphs that mixed keyboards leave inside words.
 
-    Each word votes: if most of its letters are Greek, Latin letters that look identical to a
-    Greek one (A B E Z H I K M N O P T X Y o) become Greek; if most are Latin, the Greek
-    twins become Latin. Words with no majority, and words in a single script, are left alone.
+    Only true homoglyphs are converted: the Latin letters A B E Z H I K M N O P T X Y o and
+    their Greek twins. For each word that mixes the two scripts:
+
+    1. If it has a letter that only exists in Greek (Θ, λ, ά ...) and all its Latin letters
+       have Greek twins, it is Greek: the Latin letters become Greek. The same goes the other
+       way round for Latin.
+    2. Otherwise (every letter has a twin, or both scripts have letters without one) the
+       majority script wins; with no majority the word is left alone.
+
+    Words in a single script are never touched.
 
     >>> fix_lookalikes("Kαλημέρα") == "Καλημέρα"  # Latin K -> Greek Κ
+    True
+    >>> fix_lookalikes("AΘΗNA") == "ΑΘΗΝΑ"  # Latin A, N, A: outvoted, but Θ only exists in Greek
     True
     >>> fix_lookalikes("NΕΑ ΤΑΞΙ") == "ΝΕΑ ΤΑΞΙ"  # Latin N in a Greek word
     True

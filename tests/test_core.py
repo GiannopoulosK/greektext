@@ -170,6 +170,21 @@ class TestScript:
         assert fix_lookalikes("123 Kαι") == "123 Και"
         assert fix_lookalikes(NFD("Kαλημέρα")) == NFD("Καλημέρα")
 
+    @pytest.mark.parametrize(
+        ("text", "expected"),
+        [
+            ("AΘΗNA", "ΑΘΗΝΑ"),  # 3 Latin vs 2 Greek, but Θ is Greek-only
+            ("AΘHNA", "ΑΘΗΝΑ"),  # only Θ is Greek
+            ("ΚAΦE", "ΚΑΦΕ"),  # tie, Φ decides
+            ("ΤΑXΙ", "ΤΑΧΙ"),  # no Greek-only letter: majority
+            ("HΟTΕL", "HOTEL"),  # L is Latin-only
+            ("Tαxi", "Tαxi"),  # α and x have no twins: majority Latin, α left alone
+            ("ΑB", "ΑB"),  # all twins, tie
+        ],
+    )
+    def test_lookalikes_letters_without_twin_decide(self, text: str, expected: str) -> None:
+        assert fix_lookalikes(text) == expected
+
     def test_sort_key(self) -> None:
         words = ["σύκο", "Σάμος", "ρόδι", "ωμέγα", "Άλφα", "ΒΗΤΑ", "ς"]
         assert sorted(words, key=sort_key) == [

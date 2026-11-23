@@ -6,6 +6,12 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- `fix_lookalikes` no longer makes all-caps Greek words worse: a letter that only exists in one
+  script now decides the word when every letter of the other script has a twin, so `AΘΗNA`
+  becomes `ΑΘΗΝΑ` instead of `AΘHNA`.
+
 ## [0.4.0] - 2026-11-23
 
 ### Added
